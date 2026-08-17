@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excyte | Cookie Policy</title>
+<link rel="stylesheet" href="../css/styles.css">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ SIDEBAR (injected by js/menu.js) ============ -->
+  <div id="sidebar-placeholder"></div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <h1 class="page-title">Cookie Policy</h1>
+
+    <div class="legal-content">
+      <p>Proin vestibulum tempor euismod. Nulla turpis ligula, tempor id magna eget, scelerisque gravida turpis. Pellentesque euismod ex sit amet dolor ornare, id placerat lectus euismod. Morbi ut urna at lectus elementum iaculis quis et dolor. Duis ac lectus semper, auctor ipsum non, tristique ex. Sed pharetra, augue ut luctus viverra, nibh metus volutpat erat, sed porta metus tortor eget elit. Ut sapien sem, auctor feugiat mi nec, aliquam ullamcorper tellus. Cras risus nulla, commodo in luctus eget, molestie varius enim. Phasellus ultricies enim vitae odio tempor, vel rhoncus orci tristique. Quisque et augue nec elit sagittis pulvinar. Sed lacinia in nulla id mattis. Morbi auctor pretium nisl, at condimentum risus gravida nec.</p>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="terms-conditions.html">Terms &amp; Conditions</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-policy.html">Cookie Policy</a>
+      </div>
+      <div class="footer-credit">Software development by <a href="https://www.geeks.ltd/" target="_blank" rel="noopener">Geeks</a></div>
+    </footer>
+
+  </main>
+</div>
+
+<script src="../js/menu.js"></script>
+</body>
+</html>

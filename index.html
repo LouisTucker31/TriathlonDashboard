@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excyte | Exercise Themes</title>
+<link rel="stylesheet" href="css/styles.css">
+<script>
+  // Runs before anything paints, so the layout is correct from the very
+  // first frame instead of rendering expanded then sliding to collapsed.
+  (function () {
+    try {
+      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body data-page="exercises">
+
+<div class="app">
+
+  <!-- ============ SIDEBAR (injected by js/menu.js) ============ -->
+  <div id="sidebar-placeholder"></div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <h1 class="page-title">Exercise Themes</h1>
+
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="themeFilter">Theme</label>
+        <div class="select-wrapper">
+          <select id="themeFilter">
+            <option value="all">All Themes</option>
+            <option value="My Exercises">My Exercises</option>
+            <option value="Phishing & Social Engineering">Phishing &amp; Social Engineering</option>
+            <option value="Ransomware & Extortion">Ransomware &amp; Extortion</option>
+            <option value="Test Theme">Test Theme</option>
+            <option value="Communications, Media & Stakeholder Management">Communications, Media &amp; Stakeholder Management</option>
+            <option value="Cyber Assessment Framework (CAF)">Cyber Assessment Framework (CAF)</option>
+            <option value="Education and Safeguarding">Education and Safeguarding</option>
+            <option value="Excyte Live">Excyte Live</option>
+            <option value="Executive & Leadership">Executive &amp; Leadership</option>
+            <option value="How to Exercise">How to Exercise</option>
+            <option value="Incident of the Month">Incident of the Month</option>
+            <option value="Insider Threat">Insider Threat</option>
+            <option value="National Security">National Security</option>
+            <option value="NCSC Exercise in a Box">NCSC Exercise in a Box</option>
+            <option value="Operational Technology (OT)">Operational Technology (OT)</option>
+            <option value="PYOA (BETA)">PYOA (BETA)</option>
+            <option value="Supply Chain & Third-Party Compromise">Supply Chain &amp; Third-Party Compromise</option>
+            <option value="Website Defacement & Brand Abuse">Website Defacement &amp; Brand Abuse</option>
+          </select>
+          <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <div class="filter-group status-group">
+        <label>Status</label>
+        <div class="radio-row" id="statusFilter">
+          <label class="radio">
+            <input type="radio" name="status" value="all" checked>
+            <span class="radio-dot"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+            All
+          </label>
+          <label class="radio">
+            <input type="radio" name="status" value="active">
+            <span class="radio-dot"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+            Active exercice
+          </label>
+          <label class="radio">
+            <input type="radio" name="status" value="inactive">
+            <span class="radio-dot"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+            Not active exercise
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-panel">
+      <div class="cards-grid" id="cardsGrid">
+
+        <div class="card" data-theme="My Exercises" data-status="inactive">
+          <h3>My Exercises</h3>
+          <p>Exercises you've created and saved yourself in the Exercise Builder.</p>
+          <div class="icon-box"><img src="assets/icons/my-exercises.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Phishing & Social Engineering" data-status="inactive">
+          <h3>Phishing &amp; Social Engineering</h3>
+          <p>Assess your team's ability to detect, report, and respond to social engineering threats.</p>
+          <div class="icon-box"><img src="assets/icons/phishing.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Ransomware & Extortion" data-status="inactive">
+          <h3>Ransomware &amp; Extortion</h3>
+          <p>Explore scenarios where data is held hostage and recovery decisions must be made under pressure.</p>
+          <div class="icon-box"><img src="assets/icons/ransomware.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Test Theme" data-status="inactive">
+          <h3>Test Theme</h3>
+          <p>UAT test theme</p>
+          <div class="icon-box"><img src="assets/icons/test-theme.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Communications, Media & Stakeholder Management" data-status="inactive">
+          <h3>Communications, Media &amp; Stakeholder Management</h3>
+          <p>Test your organisation's ability to manage information flow, media engagement, and stakeholder communications during a crisis.</p>
+          <div class="icon-box"><img src="assets/icons/comms.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Cyber Assessment Framework (CAF)" data-status="inactive">
+          <h3>Cyber Assessment Framework (CAF)</h3>
+          <p>Assess your organisation's cyber resilience using scenarios aligned to the NCSC Cyber Assessment Framework principles.</p>
+          <div class="icon-box"><img src="assets/icons/caf.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Education and Safeguarding" data-status="inactive">
+          <h3>Education and Safeguarding</h3>
+          <p>Explore how cyber incidents impact safeguarding responsibilities and continuity within the education sector.</p>
+          <div class="icon-box"><img src="assets/icons/education.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Excyte Live" data-status="inactive">
+          <h3>Excyte Live</h3>
+          <p>Excyte Live delivers interactive cyber incident exercises designed to strengthen decision-making, communication, and organisational resilience through realistic, role-based scenarios.</p>
+          <div class="icon-box"><img src="assets/icons/excyte-live.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Executive & Leadership" data-status="inactive">
+          <h3>Executive &amp; Leadership</h3>
+          <p>Test your cyber security leaders and executives.</p>
+          <div class="icon-box"><img src="assets/icons/executive.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="How to Exercise" data-status="inactive">
+          <h3>How to Exercise</h3>
+          <p>Learn how to plan, design, and deliver effective cyber exercises to your organisation.</p>
+          <div class="icon-box"><img src="assets/icons/how-to-exercise.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Incident of the Month" data-status="inactive">
+          <h3>Incident of the Month</h3>
+          <p>Tackle recent incidents.</p>
+          <div class="icon-box"><img src="assets/icons/incident-of-month.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Insider Threat" data-status="inactive">
+          <h3>Insider Threat</h3>
+          <p>Explore scenarios where trusted individuals pose risks to organisational security and resilience.</p>
+          <div class="icon-box"><img src="assets/icons/insider-threat.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="National Security" data-status="inactive">
+          <h3>National Security</h3>
+          <p>Assess readiness to detect, respond to, and recover from cyber events with national-level implications.</p>
+          <div class="icon-box"><img src="assets/icons/national-security.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="NCSC Exercise in a Box" data-status="inactive">
+          <h3>NCSC Exercise in a Box</h3>
+          <p>Experience scenarios inspired by the NCSC's Exercise in a Box to strengthen cyber resilience and teamwork.</p>
+          <div class="icon-box"><img src="assets/icons/ncsc-box.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Operational Technology (OT)" data-status="inactive">
+          <h3>Operational Technology (OT)</h3>
+          <p>Evaluate the security and continuity of industrial processes during a cyber incident.</p>
+          <div class="icon-box"><img src="assets/icons/ot.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="PYOA (BETA)" data-status="inactive">
+          <h3>PYOA (BETA)</h3>
+          <p>Pick your challenge, forge your path, face the fallout.</p>
+          <div class="icon-box"><img src="assets/icons/pyoa.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Supply Chain & Third-Party Compromise" data-status="inactive">
+          <h3>Supply Chain &amp; Third-Party Compromise</h3>
+          <p>Explore scenarios where vulnerabilities in the supply chain impact operations and security.</p>
+          <div class="icon-box"><img src="assets/icons/supply-chain.svg" alt=""></div>
+        </div>
+
+        <div class="card" data-theme="Website Defacement & Brand Abuse" data-status="inactive">
+          <h3>Website Defacement &amp; Brand Abuse</h3>
+          <p>Test your organisation's ability to detect and respond to website defacement and brand abuse incidents.</p>
+          <div class="icon-box"><img src="assets/icons/website-defacement.svg" alt=""></div>
+        </div>
+
+      </div>
+
+      <p class="no-results" id="noResults">No exercise themes match the selected filters.</p>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="pages/terms-conditions.html">Terms &amp; Conditions</a>
+        <a href="pages/privacy-policy.html">Privacy Policy</a>
+        <a href="pages/cookie-policy.html">Cookie Policy</a>
+      </div>
+      <div class="footer-credit">Software development by <a href="https://www.geeks.ltd/" target="_blank" rel="noopener">Geeks</a></div>
+    </footer>
+
+  </main>
+</div>
+
+<script src="js/menu.js"></script>
+<script src="js/script.js"></script>
+</body>
+</html>

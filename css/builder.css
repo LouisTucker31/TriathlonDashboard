@@ -1,0 +1,1787 @@
+/* ============================================================
+   EXERCISE BUILDER — wireframe/visual layout only, no
+   functionality wired up yet (except theme selection, which
+   just swaps the canvas background). Toolbar, canvas and side
+   rails all use the same tokens/patterns as css/styles.css
+   (--navy, --teal, --border-light, --bg-panel, 6px radii, etc.)
+   ============================================================ */
+
+/* Claims a full viewport height on its own (minus main-content's
+   own vertical padding), independent of whatever renders after it
+   (the notes section). That's what keeps the canvas from shrinking
+   to make room below — the notes section is meant to push the page
+   into a scroll instead of sharing this space. */
+.builder-viewport {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px);
+}
+
+.builder-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* Fills whatever's left inside .builder-viewport after the
+     header — see above for why that's now a fixed-enough box
+     rather than something shared with the notes section. */
+  flex: 1;
+  min-height: 0;
+}
+
+/* ============ TOOLBAR ============ */
+.builder-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  row-gap: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 26px;
+  background: var(--border-light);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--navy);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.toolbar-btn:hover {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+
+.toolbar-btn svg { flex-shrink: 0; }
+
+/* Bold / Italic / Underline shown as styled letters rather than icons */
+.toolbar-btn-text {
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--navy);
+}
+
+.toolbar-btn-bold { font-weight: 700; }
+.toolbar-btn-italic { font-style: italic; }
+.toolbar-btn-underline { text-decoration: underline; }
+
+.toolbar-color-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--navy);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.toolbar-color-btn svg { flex-shrink: 0; }
+
+.toolbar-color-btn:hover { background: var(--teal-light); }
+
+.toolbar-color-btn .letter {
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--navy);
+}
+
+.toolbar-color-btn .color-bar {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--teal);
+}
+
+.toolbar-color-btn .highlight-bar { background: #F5C518; }
+
+/* Font / size dropdowns — same pattern as .select-wrapper, sized down */
+.toolbar-select-wrapper {
+  width: 132px;
+  flex-shrink: 0;
+}
+
+.toolbar-select-wrapper.toolbar-size-wrapper { width: 74px; }
+
+.toolbar-select-wrapper select {
+  height: 34px;
+  padding: 0 30px 0 12px;
+  font-size: 13px;
+}
+
+.toolbar-select-wrapper .select-arrow { right: 10px; }
+
+/* Pushes the panel-toggle group to the far right of the toolbar */
+.toolbar-group-right { margin-left: auto; }
+
+.toolbar-panel-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  flex-shrink: 0;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.toolbar-panel-toggle svg { flex-shrink: 0; }
+
+.toolbar-panel-toggle:hover {
+  border-color: var(--teal);
+  color: var(--teal-dark);
+}
+
+/* "active" = panel currently open */
+.toolbar-panel-toggle.active {
+  background: var(--teal-light);
+  border-color: var(--teal);
+  color: var(--teal-dark);
+}
+
+.toolbar-btn.active {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+
+/* ============ LAYOUT DROPDOWN ============ */
+.toolbar-dropdown-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.layout-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(22, 38, 74, 0.15);
+  padding: 12px;
+  z-index: 30;
+}
+
+.layout-dropdown-panel.open { display: block; }
+
+.layout-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.layout-thumb {
+  position: relative;
+  width: 84px;
+  height: 47px;
+  background: #ffffff;
+  border: 1.5px solid var(--border-light);
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.layout-thumb:hover { border-color: var(--teal); }
+
+.layout-thumb.active {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+/* ============ SHAPE DROPDOWN ============ */
+.shape-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(22, 38, 74, 0.15);
+  padding: 10px;
+  z-index: 30;
+  gap: 8px;
+}
+
+.shape-dropdown-panel.open { display: flex; }
+
+.shape-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--bg-panel);
+  color: var(--navy);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.shape-option:hover {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+
+.layout-thumb-ph {
+  position: absolute;
+  border: 1px dashed #9AA3B2;
+  background: rgba(154, 163, 178, 0.08);
+}
+
+/* ============ THEME DROPDOWN ============ */
+/* Same dropdown shell as Layout, but applies to the whole exercise
+   rather than a single slide — reuses the existing .rail-thumb /
+   .theme-thumb / .theme-swatch-* styling that
+   used to live in the side rail, just sized for a grid here instead
+   of a single narrow column. */
+.theme-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(22, 38, 74, 0.15);
+  padding: 12px;
+  z-index: 30;
+}
+
+.theme-dropdown-panel.open { display: block; }
+
+.theme-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.theme-dropdown-grid .rail-thumb { width: 84px; }
+
+/* ============ TEXT / HIGHLIGHT COLOUR DROPDOWN ============ */
+.color-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(22, 38, 74, 0.15);
+  padding: 12px;
+  z-index: 30;
+  width: 176px;
+  box-sizing: border-box;
+}
+
+.color-dropdown-panel.open { display: block; }
+
+.color-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border-light);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.color-swatch:hover { border-color: var(--teal); }
+
+.color-swatch.active {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+.color-dropdown-none {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 6px 0;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--navy);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.color-dropdown-none:hover { border-color: var(--teal); background: var(--teal-light); }
+
+.color-dropdown-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+  font-size: 12px;
+  color: var(--navy);
+  cursor: pointer;
+}
+
+.color-dropdown-custom input[type="color"] {
+  width: 28px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+
+/* ============ MODULE DROPDOWN ============ */
+/* Same panel shell as Layout/Theme, but purely a browsing mock-up —
+   nothing here is clickable and nothing gets added to the slide.
+   Cards deliberately don't pick up the current theme colour, since
+   real modules would carry their own content and just inherit
+   whatever theme's active once actually inserted. */
+.module-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(22, 38, 74, 0.15);
+  padding: 12px;
+  z-index: 30;
+}
+
+.module-dropdown-panel.open { display: block; }
+
+.module-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.module-card {
+  width: 104px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: default;
+}
+
+.module-card-preview {
+  aspect-ratio: 4 / 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  color: var(--teal);
+}
+
+.module-card-line {
+  display: block;
+  width: 70%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border-light);
+}
+
+.module-card-line.short { width: 45%; }
+
+.module-card-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--navy);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============ ARRANGE DROPDOWN ============ */
+/* Same panel shell as Layout/Theme/Module. Visual only for now — no
+   click behaviour wired up, same as Module. */
+.arrange-dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(22, 38, 74, 0.15);
+  padding: 12px;
+  z-index: 30;
+}
+
+.arrange-dropdown-panel.open { display: block; }
+
+.arrange-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.arrange-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.arrange-option:hover {
+  border-color: var(--teal);
+  background: var(--teal-light);
+}
+
+.arrange-option svg { flex-shrink: 0; color: var(--text-gray); }
+
+/* ============ WORKSPACE (canvas + theme rail + slide rail) ============ */
+.builder-workspace {
+  display: flex;
+  gap: 20px;
+  /* Fills whatever height builder-page has actually grown into
+     (see above) instead of a fixed guess. */
+  flex: 1;
+  min-height: 420px;
+}
+
+.builder-canvas-area {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 24px;
+  /* Only ever kicks in if the page is zoomed in far enough that the
+     slide can't shrink any further — normal sizes never need it,
+     since .slide-canvas below is capped to fit both dimensions. */
+  overflow: auto;
+  /* Lets .slide-canvas below size itself in cqw/cqh relative to
+     this box specifically — see the note on .slide-canvas for why
+     that's needed instead of just max-width/max-height. */
+  container-type: size;
+  container-name: canvas-area;
+}
+
+.slide-canvas {
+  /* width/height together (not just aspect-ratio + max-width/
+     max-height) because that pair doesn't reliably derive a true
+     4:3 box when BOTH axes are simultaneously the binding
+     constraint — Chromium resolves width from max-width and height
+     from max-height independently in that case, which can drift the
+     rendered ratio well off 4:3 (confirmed: same markup rendered
+     anywhere from ~1.52:1 to ~1.64:1 depending on viewport, instead
+     of 1.33:1). Computing both sides explicitly via cqw/cqh min()
+     is the fix: each formula picks the same binding axis, so the
+     two always resolve to a matching 4:3 pair. */
+  width: min(100cqw, 177.778cqh);
+  height: min(100cqh, 56.25cqw);
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(22, 38, 74, 0.12);
+  transition: background 0.2s ease;
+  /* Lets layout placeholder text below be sized in cqw, so it scales
+     with the slide's actual rendered size instead of the viewport. */
+  container-type: inline-size;
+  container-name: slide;
+}
+
+/* Small placeholder tag so slide-switching is visible even though
+   there's no real slide content yet — kept out of the way in the
+   corner now that real layout placeholders occupy the centre. */
+.slide-canvas-label {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: rgba(22, 38, 74, 0.3);
+  background: rgba(255, 255, 255, 0.7);
+  padding: 2px 7px;
+  border-radius: 3px;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Placeholder slots for logos that'll be auto-applied per org/GDAK —
+   translucent so they read against any theme background colour. */
+.slide-canvas-logo {
+  position: absolute;
+  top: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--navy);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px dashed rgba(22, 38, 74, 0.3);
+  border-radius: 4px;
+  padding: 4px 8px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.slide-canvas-logo-left { left: 12px; }
+.slide-canvas-logo-right { right: 12px; }
+
+/* ============ LAYOUT PLACEHOLDERS ============ */
+/* Static, non-interactive boxes representing a slide layout's
+   regions — like PowerPoint's own "Click to add title" boxes, but
+   they don't do anything (no editing, no moving) at this stage. */
+.slide-layout-render {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.slide-ph {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1.5px dashed #9AA3B2;
+  padding: 3% 4%;
+  display: flex;
+  font-family: inherit;
+  color: var(--navy);
+  line-height: 1.3;
+  overflow: hidden;
+}
+
+.slide-ph-title-center {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 3.6cqw;
+  font-weight: 700;
+}
+
+.slide-ph-title {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 2.6cqw;
+  font-weight: 700;
+}
+
+.slide-ph-title-bottom {
+  align-items: flex-end;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 3cqw;
+  font-weight: 700;
+}
+
+.slide-ph-subtitle {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 1.7cqw;
+  font-weight: 400;
+}
+
+.slide-ph-content {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 1.6cqw;
+  font-weight: 400;
+}
+
+.slide-ph-section-body {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 1.6cqw;
+  font-weight: 400;
+  color: #8A94A6;
+}
+
+.slide-ph-picture {
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6%;
+  text-align: center;
+  font-size: 1.3cqw;
+  color: #9AA3B2;
+}
+
+.slide-ph-picture svg {
+  width: 18%;
+  height: auto;
+  flex-shrink: 0;
+}
+
+/* ============ FREEFORM TEXT BOXES ============ */
+/* Text boxes, tables, and (soon) images all render into one shared
+   layer now — object-layer — appended in slide.objects order, so
+   whatever was added most recently paints on top. Sits above
+   layout placeholders, logos and the slide label since it's
+   appended last in the DOM. The layer itself lets clicks pass
+   through to whatever's beneath it (canvas background) except
+   where an actual object is. */
+.object-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.text-box {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  min-width: 140px;
+  max-width: 90%;
+  padding: 10px 14px;
+  font-family: inherit;
+  color: var(--navy);
+  font-size: 1.8cqw;
+  line-height: 1.35;
+  outline: 1.5px solid transparent;
+  outline-offset: -1.5px;
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  border-radius: 2px;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  background: transparent;
+}
+
+/* Placeholder only shows while idle (selected-not-editing, or
+   untouched) — the instant you click in to actually type, it
+   disappears and the caret sits on a genuinely empty line, matching
+   Word/PowerPoint/Canva/Google Docs. It reappears on deselect if the
+   box was left empty. */
+.text-box.is-empty:not([contenteditable="true"]):before {
+  content: attr(data-placeholder);
+  color: #9AA3B2;
+  pointer-events: none;
+}
+
+/* Selection/empty-state hints use outline rather than border, so
+   they never collide with a user-chosen box border colour (see
+   .box-fill/.box-border below, set via inline style on `border`). */
+.text-box.is-empty:not(.selected) {
+  outline-color: #9AA3B2;
+  outline-style: dashed;
+}
+
+.text-box.selected {
+  outline-color: var(--teal);
+  outline-style: solid;
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+  cursor: move;
+}
+
+.text-box.selected[contenteditable="true"] { cursor: text; }
+
+/* Corner resize handles — freeform text boxes only. Rendered as a
+   single overlay tracking the selected box from OUTSIDE it (see
+   showTextResizeOverlay/positionTextResizeOverlay in JS) rather than
+   as real children of the contenteditable box: nesting element
+   children inside a contenteditable div makes Chrome's editing
+   engine treat them as part of the editable flow, breaking typing
+   and caret/backspace navigation. The overlay itself ignores clicks
+   except on its own handles, so it never steals interaction from the
+   box or canvas underneath it. */
+.text-resize-overlay {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.text-resize-overlay.visible { display: block; }
+
+.text-resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border: 2px solid var(--teal);
+  border-radius: 2px;
+  pointer-events: auto;
+}
+
+.text-resize-handle.handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+.text-resize-handle.handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.text-resize-handle.handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+.text-resize-handle.handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+
+/* Once a freeform box has been explicitly resized it gets a fixed
+   width/height (like a layout box), so the auto-sizing/min-width/
+   max-width rules that only make sense for content-hugging boxes no
+   longer apply. */
+.text-box.has-size-override {
+  min-width: 0;
+  max-width: none;
+}
+
+/* Bulleted/numbered/lettered lists (toggled via document.execCommand
+   from the toolbar) — the page-wide `* { margin:0; padding:0; }`
+   reset strips list markers of their indent, so restore it scoped to
+   just text-box content. */
+.text-box ul,
+.text-box ol {
+  padding-left: 1.4em;
+  margin: 0.2em 0;
+}
+
+.text-box li { margin: 0.1em 0; }
+
+/* Layout-derived text boxes (created when a layout is selected —
+   see applyLayoutTextBoxes) are positioned/sized like the old
+   static placeholders were: fixed top-left rect instead of the
+   freeform boxes' auto-sized, centre-anchored default. Font styling
+   per region carries over from the old .slide-ph-* rules so picking
+   "Title Slide" etc. still reads with the same visual hierarchy. */
+.text-box.from-layout {
+  transform: none;
+  min-width: 0;
+  max-width: none;
+  padding: 3% 4%;
+  display: flex;
+  overflow: hidden;
+}
+
+.text-box.variant-title-center {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 3.6cqw;
+  font-weight: 700;
+}
+
+.text-box.variant-title {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 2.6cqw;
+  font-weight: 700;
+}
+
+.text-box.variant-title-bottom {
+  align-items: flex-end;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 3cqw;
+  font-weight: 700;
+}
+
+.text-box.variant-subtitle {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 1.7cqw;
+  font-weight: 400;
+}
+
+.text-box.variant-content {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 1.6cqw;
+  font-weight: 400;
+}
+
+.text-box.variant-section-body {
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 1.6cqw;
+  font-weight: 400;
+  color: #8A94A6;
+}
+
+/* ============ FREEFORM TABLES ============ */
+/* Same idea as text boxes — added via the toolbar, draggable,
+   deletable, editable cell-by-cell. Row/column add-and-delete
+   controls only render (via CSS, not a re-render) once the table
+   itself is selected, so toggling selection never has to rebuild
+   the DOM mid-drag. Starts auto-sized to its default 55cqw content
+   width like a freeform text box; once explicitly corner-resized it
+   gets .has-size-override and a fixed width/height on the wrap (see
+   attachTableResizeHandle), same pattern as text boxes. */
+.canvas-table-wrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.canvas-table-wrap.selected { cursor: move; }
+
+.canvas-table {
+  width: 55cqw;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: #ffffff;
+}
+
+.canvas-table-wrap.has-size-override .canvas-table {
+  width: 100%;
+  height: 100%;
+}
+
+.canvas-table td {
+  border: 1px solid var(--border-light);
+  padding: 1.1cqw 1.3cqw;
+  color: var(--navy);
+  font-family: inherit;
+  font-size: 1.5cqw;
+  line-height: 1.35;
+  outline: none;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+.canvas-table-wrap.selected .canvas-table {
+  outline: 1.5px solid var(--teal);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+.canvas-table td[contenteditable="true"] {
+  background: rgba(26, 166, 148, 0.06);
+  cursor: text;
+}
+
+.table-resize-handle {
+  display: none;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border: 2px solid var(--teal);
+  border-radius: 2px;
+  z-index: 3;
+}
+
+.canvas-table-wrap.selected .table-resize-handle { display: block; }
+
+.table-resize-handle.handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+.table-resize-handle.handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.table-resize-handle.handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+.table-resize-handle.handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+
+/* Add-row / add-column — small teal circular buttons at the table's
+   edges, only visible once the table is selected. */
+.table-edge-btn {
+  display: none;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: var(--teal);
+  color: #ffffff;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(22, 38, 74, 0.25);
+}
+
+.table-edge-btn:hover { background: var(--teal-dark); }
+
+.canvas-table-wrap.selected .table-edge-btn { display: flex; }
+
+.table-add-col-btn { right: -26px; top: 50%; transform: translateY(-50%); }
+.table-add-row-btn { bottom: -26px; left: 50%; transform: translateX(-50%); }
+
+/* Row/column handles — replace the old always-visible "x" buttons.
+   Default: a small grip you can drag to reorder that row/column.
+   Press and hold it still (no drag) for ~450ms and it arms into a
+   delete state (icon flips to a red "x", background tints red);
+   release while armed to actually delete. A quick click does
+   nothing, which avoids accidental deletes. Same visibility rule
+   as the add buttons — only shown while the table is selected.
+   While holding, a radial fill sweeps over the ~450ms window (via
+   the --charge-progress custom property, updated in JS every
+   animation frame) so the hold has visible, continuous feedback
+   instead of a silent wait with nothing to see until it either
+   arms or you let go. */
+.table-handle {
+  display: none;
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: none;
+  background: var(--bg-panel);
+  color: var(--text-gray);
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  transition: background 0.15s ease, color 0.15s ease;
+  --charge-progress: 0;
+}
+
+.table-handle:hover { background: var(--border-light); color: var(--navy); }
+
+.table-handle.charging {
+  background:
+    conic-gradient(#D64545 calc(var(--charge-progress) * 1%), var(--border-light) 0),
+    var(--bg-panel);
+  color: var(--navy);
+}
+
+.table-handle.armed {
+  background: #D64545;
+  color: #ffffff;
+}
+
+.table-handle.armed:hover { background: #b93a3a; }
+
+.canvas-table-wrap.selected .table-handle { display: flex; }
+
+.table-col-handle { top: -22px; transform: translateX(-50%); }
+.table-row-handle { left: -22px; transform: translateY(-50%); }
+.table-col-handle svg { transform: rotate(90deg); }
+
+/* Thin insertion indicator shown while dragging a handle, marking
+   where the row/column will land if dropped now. */
+.table-reorder-line {
+  display: none;
+  position: absolute;
+  background: var(--teal);
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.table-reorder-line.visible { display: block; }
+.table-reorder-line.row-line { left: 0; right: 0; height: 3px; }
+.table-reorder-line.col-line { top: 0; bottom: 0; width: 3px; }
+
+/* ============ FREEFORM IMAGES ============ */
+/* Same object family as text boxes/tables — draggable, deletable,
+   undoable. Unlike those two, images also get four corner handles
+   for resizing once selected; dragging one scales from the opposite
+   (fixed) corner and always preserves the image's original aspect
+   ratio, matching Canva/PowerPoint's default corner-resize. */
+.canvas-image-wrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+}
+
+.canvas-image-wrap.selected {
+  cursor: move;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+.canvas-image-el {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.image-resize-handle {
+  display: none;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border: 2px solid var(--teal);
+  border-radius: 2px;
+  z-index: 3;
+}
+
+.canvas-image-wrap.selected .image-resize-handle { display: block; }
+
+.image-resize-handle.handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+.image-resize-handle.handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.image-resize-handle.handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+.image-resize-handle.handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+
+/* ============ FREEFORM SHAPES ============ */
+/* Same object family as text boxes/tables/images — draggable,
+   deletable, undoable, corner-resize handles. Resize locks to the
+   shape's own aspect ratio by default (like images) unless Shift is
+   held, and there's a fifth handle above the shape for rotation —
+   dragging it sets the shape's angle around its own centre. Rotation
+   is applied as a CSS transform on the wrap (composed after the
+   translate that centres it), so the resize handles themselves stay
+   screen-aligned (unrotated) for predictable dragging, while only
+   the shape body visually rotates via .canvas-shape-body's own
+   transform. */
+.canvas-shape-wrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+}
+
+.canvas-shape-wrap.selected {
+  cursor: move;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+.canvas-shape-body {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.shape-resize-handle {
+  display: none;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ffffff;
+  border: 2px solid var(--teal);
+  border-radius: 2px;
+  z-index: 3;
+}
+
+.canvas-shape-wrap.selected .shape-resize-handle { display: block; }
+
+.shape-resize-handle.handle-tl { top: -6px; left: -6px; cursor: nwse-resize; }
+.shape-resize-handle.handle-br { bottom: -6px; right: -6px; cursor: nwse-resize; }
+.shape-resize-handle.handle-tr { top: -6px; right: -6px; cursor: nesw-resize; }
+.shape-resize-handle.handle-bl { bottom: -6px; left: -6px; cursor: nesw-resize; }
+
+.shape-rotate-handle {
+  display: none;
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--teal);
+  cursor: grab;
+  z-index: 3;
+}
+
+.shape-rotate-handle:active { cursor: grabbing; }
+
+/* Reused across every rotatable object type (shapes, images, tables
+   directly; text boxes via their .text-resize-overlay, since a
+   text box's own resize/rotate handles can't be real children of
+   the contenteditable element — see the overlay's own comment). */
+.canvas-shape-wrap.selected .shape-rotate-handle,
+.canvas-image-wrap.selected .shape-rotate-handle,
+.canvas-table-wrap.selected .shape-rotate-handle,
+.text-resize-overlay.visible .shape-rotate-handle {
+  display: block;
+}
+
+/* Connects the rotate handle to the object's top edge, same idea as
+   PowerPoint/Canva's rotate stalk. */
+.shape-rotate-stalk {
+  display: none;
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  width: 1.5px;
+  height: 22px;
+  background: var(--teal);
+  transform: translateX(-50%);
+}
+
+.canvas-shape-wrap.selected .shape-rotate-stalk,
+.canvas-image-wrap.selected .shape-rotate-stalk,
+.canvas-table-wrap.selected .shape-rotate-stalk,
+.text-resize-overlay.visible .shape-rotate-stalk {
+  display: block;
+}
+
+/* ============ MULTI-SELECT ============ */
+/* Drag-to-select marquee, drawn while dragging from an empty part of
+   the canvas — purely visual, positioned/sized in JS as the drag
+   moves. Objects caught inside it when released get .multi-selected,
+   the same teal-outline treatment as .selected but without any of
+   the per-type resize/rotate/edit handles a single selection shows,
+   since none of those apply to a group. */
+.canvas-marquee {
+  display: none;
+  position: absolute;
+  border: 1.5px solid var(--teal);
+  background: rgba(26, 166, 148, 0.08);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.canvas-marquee.active { display: block; }
+
+/* Canva-style snap guides — a single reusable vertical/horizontal
+   line each, shown and repositioned via JS while dragging/resizing
+   an object near alignment with the canvas centre or another
+   object's edges/centre (see snapPosition in JS). Pink/magenta is
+   the near-universal convention for this across design tools
+   (Canva, Figma, PowerPoint), chosen deliberately to read as
+   distinct from this app's teal selection colour. */
+.snap-guide {
+  display: none;
+  position: absolute;
+  background: #FF4FCB;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.snap-guide.active { display: block; }
+
+.snap-guide-v { top: 0; bottom: 0; width: 1px; }
+.snap-guide-h { left: 0; right: 0; height: 1px; }
+
+.text-box.multi-selected,
+.canvas-image-wrap.multi-selected,
+.canvas-shape-wrap.multi-selected {
+  outline: 1.5px solid var(--teal);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+.canvas-table-wrap.multi-selected .canvas-table {
+  outline: 1.5px solid var(--teal);
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+.canvas-table-wrap.multi-selected,
+.canvas-image-wrap.multi-selected,
+.canvas-shape-wrap.multi-selected,
+.text-box.multi-selected {
+  cursor: move;
+}
+
+/* ============ HEADER & FOOTER ============ */
+/* Word-style: click the toolbar button (or double-click directly on
+   the header/footer) to enter an edit view — the rest of the slide
+   dims behind a backdrop while the header and footer stay sharp and
+   editable. Close it via the toolbar button again, or by
+   double-clicking anywhere on the dimmed backdrop. Unlike text
+   boxes/tables, header and footer aren't per-slide — they're the
+   same two persistent elements underneath every slide, so nothing
+   extra is needed to make them "carry across" new slides. */
+.hf-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(22, 38, 74, 0.45);
+  z-index: 8;
+  cursor: default;
+}
+
+.slide-canvas.hf-editing .hf-overlay { display: block; }
+
+.slide-header,
+.slide-footer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9;
+  box-sizing: border-box;
+  max-width: 65%;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 1.3cqw;
+  color: var(--navy);
+  text-align: center;
+  outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.4;
+  pointer-events: auto;
+}
+
+.slide-header { top: 10px; }
+.slide-footer { bottom: 8px; }
+
+.slide-header.is-empty,
+.slide-footer.is-empty {
+  display: none;
+}
+
+.slide-canvas.hf-editing .slide-header,
+.slide-canvas.hf-editing .slide-footer {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+  cursor: text;
+  max-width: 75%;
+  white-space: normal;
+  background: #ffffff;
+  border: 1.5px dashed var(--teal);
+  border-radius: 3px;
+}
+
+.slide-canvas.hf-editing .slide-header.is-empty:before,
+.slide-canvas.hf-editing .slide-footer.is-empty:before {
+  content: attr(data-placeholder);
+  color: #9AA3B2;
+}
+
+/* Real logo (Excyte branding is fixed/automatic, unlike the org logo
+   slot to its right, which stays a text placeholder until we have an
+   actual asset to show per-org). No dashed border — this one's real.
+   No background box either — the logo itself adapts to the slide's
+   theme colour instead of sitting on an opaque card (see .dark-bg
+   below), so it reads directly against whatever's behind it. */
+.slide-canvas-logo-badge {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  pointer-events: none;
+  user-select: none;
+}
+
+.slide-canvas-logo-img {
+  height: 26px;
+  width: auto;
+  display: block;
+  transition: filter 0.2s ease;
+}
+
+/* Toggled on .slide-canvas via JS based on the theme background's
+   luminance (see isDarkBackground in exercise-builder.js /
+   exercise-delivery.js). invert()+hue-rotate(180deg) is the standard
+   trick for flipping a two-tone mark's lightness for a dark
+   background while keeping its hue close to the original, without
+   needing a separate light-mode logo asset. */
+.slide-canvas.dark-bg .slide-canvas-logo-img {
+  filter: invert(1) hue-rotate(180deg) brightness(1.15);
+}
+
+/* ============ SIDE RAILS (shared: theme rail + slide rail) ============ */
+.side-rail {
+  width: 180px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 14px 12px;
+  overflow-y: auto;
+}
+
+.side-rail-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text-gray);
+  margin-bottom: 10px;
+}
+
+.thumb-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Shared thumbnail box (both slide and theme thumbnails) */
+.rail-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 2px solid var(--border-light);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rail-thumb:hover { border-color: var(--teal); }
+
+.rail-thumb.active {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+/* -- slide thumbnails -- */
+.slide-thumb { background: var(--bg-panel); }
+
+.slide-thumb-number {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(22, 38, 74, 0.75);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* Delete cross / duplicate icon — only shown on hover, only on slide
+   thumbs. Delete is added via JS only when there's more than one
+   slide, so the last remaining slide can't be deleted; duplicate has
+   no such restriction. */
+.thumb-delete-btn,
+.thumb-duplicate-btn {
+  position: absolute;
+  top: 4px;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(22, 38, 74, 0.75);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  z-index: 2;
+}
+
+.thumb-delete-btn { right: 4px; }
+.thumb-duplicate-btn { right: 26px; }
+
+.thumb-delete-btn:hover { background: #D64545; }
+.thumb-duplicate-btn:hover { background: var(--teal); }
+
+.slide-thumb:hover .thumb-delete-btn,
+.slide-thumb:hover .thumb-duplicate-btn,
+.thumb-delete-btn:focus,
+.thumb-duplicate-btn:focus {
+  opacity: 1;
+}
+
+/* Drag-to-reorder feedback — the dragged thumbnail dims, and a teal
+   edge line on whichever thumbnail is under the pointer shows where
+   it would land if dropped now. */
+.slide-thumb.dragging { opacity: 0.4; }
+
+.slide-thumb.drop-before { box-shadow: inset 0 3px 0 var(--teal); }
+.slide-thumb.drop-after { box-shadow: inset 0 -3px 0 var(--teal); }
+
+.slide-thumb-add {
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 2px dashed var(--border-light);
+  border-radius: 4px;
+  color: var(--text-gray);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.slide-thumb-add:hover {
+  border-color: var(--teal);
+  color: var(--teal-dark);
+  background: var(--teal-light);
+}
+
+/* -- theme thumbnails -- */
+/* Mockup swatches only — these gradients are placeholders standing
+   in for real themes, not tied to anything yet. */
+.theme-swatch-blank { background: #ffffff; }
+.theme-swatch-teal { background: linear-gradient(135deg, #1AA694, #0F7A6B); }
+.theme-swatch-navy { background: linear-gradient(135deg, #16264A, #2B3F6B); }
+.theme-swatch-sunset { background: linear-gradient(135deg, #E8A33D, #D64545); }
+.theme-swatch-violet { background: linear-gradient(135deg, #4A5FC1, #16264A); }
+.theme-swatch-mint { background: linear-gradient(135deg, #E7F7F4, #1AA694); }
+
+/* Collapsed via the Theme/Slides toolbar toggles — removed from the
+   flex layout entirely so the canvas expands into the freed space. */
+.side-rail.rail-hidden { display: none; }
+
+/* ============ RESPONSIVE ============ */
+/* Below this width both rails move under the canvas and lay their
+   thumbnails out horizontally instead, same idea as PowerPoint's
+   mobile view. */
+@media (max-width: 860px) {
+  .builder-workspace {
+    flex-direction: column;
+    flex: none;
+    height: auto;
+  }
+
+  .builder-canvas-area { min-height: 320px; }
+
+  .side-rail {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .side-rail-label { display: none; }
+
+  .thumb-list {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .rail-thumb,
+  .slide-thumb-add {
+    width: 90px;
+    flex-shrink: 0;
+  }
+}
+
+/* ============ SLIDE / INJECT NAME ============ */
+/* Sits between the canvas workspace and the notes section — per
+   slide, same as discussion points/observations below it, so it
+   swaps whenever the current slide changes. */
+.builder-slide-name-section {
+  margin-top: 20px;
+}
+
+.slide-name-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 6px;
+}
+
+.slide-name-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.slide-name-input::placeholder { color: #9AA3B2; font-weight: 400; }
+
+.slide-name-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+/* ============ OBSERVATIONS & DISCUSSION POINTS ============ */
+/* Sits below the canvas workspace, above the page footer — per
+   slide (rebuilt whenever the current slide changes), so this is
+   deliberately NOT inside .builder-page's flex:1 area: it has its
+   own natural height and pushes the page to scroll once it doesn't
+   fit, rather than competing with the canvas for space. */
+.builder-notes-section {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+  margin-bottom: 28px;
+}
+
+.notes-col {
+  flex: 1;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.notes-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.notes-col-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0;
+}
+
+.notes-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  background: var(--teal-light);
+  border: 1px solid var(--teal);
+  border-radius: 999px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.notes-add-btn:hover {
+  background: var(--teal);
+  color: #ffffff;
+}
+
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notes-list:empty:before {
+  content: 'Nothing added yet.';
+  color: var(--text-gray);
+  font-size: 13px;
+  font-style: italic;
+}
+
+.note-item { display: flex; }
+
+/* Renamed from .obs-item to avoid colliding with the unrelated
+   .obs-item class already used globally for the delivery-view
+   observation checklist (that one sets align-items:center, which
+   was silently breaking this row's layout since both were loaded
+   on this page). */
+.obs-note-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.obs-item-row { display: flex; align-items: flex-start; gap: 8px; }
+
+.note-item, .obs-item-row { gap: 8px; }
+
+.note-textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 60px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--navy);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.note-textarea::placeholder { color: #9AA3B2; }
+
+.note-textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+.obs-type-select {
+  width: 148px;
+  flex-shrink: 0;
+}
+
+.obs-type-select select {
+  padding: 10px 34px 10px 12px;
+  font-size: 13px;
+}
+
+.obs-type-select .select-arrow { right: 10px; }
+
+.note-delete-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  margin-top: 0;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.note-delete-btn:hover {
+  border-color: #D64545;
+  color: #D64545;
+  background: rgba(214, 69, 69, 0.06);
+}
+
+.obs-options-list {
+  margin-left: 28px;
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.obs-option-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.obs-option-input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--navy);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.obs-option-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26, 166, 148, 0.12);
+}
+
+.obs-option-delete {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.obs-option-delete:hover {
+  border-color: #D64545;
+  color: #D64545;
+  background: rgba(214, 69, 69, 0.06);
+}
+
+.obs-add-option-btn {
+  align-self: flex-start;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--teal-dark);
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  cursor: pointer;
+}
+
+.obs-add-option-btn:hover { text-decoration: underline; }
+
+/* ============ PREVIEW MODAL ============ */
+#previewDeliveryContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#previewDeliveryContainer iframe {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 860px) {
+  .builder-notes-section { flex-direction: column; }
+}
+

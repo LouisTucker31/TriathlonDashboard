@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excyte | Exercise Builder</title>
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/builder.css">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body data-page="exercise-builder">
+
+<div class="app">
+
+  <!-- ============ SIDEBAR (injected by js/menu.js) ============ -->
+  <div id="sidebar-placeholder"></div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <!-- Claims a full viewport on its own (independent of whatever
+         comes after), so the canvas always stays large/responsive
+         instead of shrinking to make room for the notes section
+         below — that section is meant to require a scroll, not
+         compete with the canvas for the same space. -->
+    <div class="builder-viewport">
+
+    <div class="detail-header">
+      <h1 class="page-title" id="builderPageTitle">Exercise Builder</h1>
+      <div class="header-actions">
+        <button type="button" class="cancel-btn" title="Preview Exercise">Preview</button>
+        <button type="button" class="save-btn" id="saveBuilderBtn">Save</button>
+      </div>
+    </div>
+
+    <div class="builder-page">
+
+      <!-- ============ TOOLBAR ============ -->
+      <div class="builder-toolbar">
+
+        <!-- Undo / Redo -->
+        <div class="toolbar-group">
+          <button type="button" class="toolbar-btn" id="undoBtn" title="Undo">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-5-5 5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v1"/></svg>
+          </button>
+          <button type="button" class="toolbar-btn" id="redoBtn" title="Redo">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0-6 6v1"/></svg>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Insert content -->
+        <div class="toolbar-group">
+          <button type="button" class="toolbar-btn" id="addTextBoxBtn" title="Add Text Box">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 9h8M12 9v6"/></svg>
+          </button>
+          <button type="button" class="toolbar-btn" id="addTableBtn" title="Insert Table">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 10h18M3 16h18M9 4v16M15 4v16"/></svg>
+          </button>
+          <button type="button" class="toolbar-btn" id="headerFooterBtn" title="Header &amp; Footer">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 8h18M3 16h18"/></svg>
+          </button>
+          <button type="button" class="toolbar-btn" id="addImageBtn" title="Insert Image">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 16l-5.5-5.5L11 15l-3-3-4 4"/></svg>
+          </button>
+          <input type="file" id="imageFileInput" accept="image/*" style="display:none;">
+          <div class="toolbar-dropdown-wrapper" id="shapeDropdownWrapper">
+            <button type="button" class="toolbar-btn" id="shapeToggleBtn" title="Insert Shape">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="15" r="5"/><rect x="12" y="4" width="9" height="9" rx="1.5"/></svg>
+            </button>
+            <div class="shape-dropdown-panel" id="shapeDropdownPanel">
+              <button type="button" class="shape-option" data-shape="rect" title="Square">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16"/></svg>
+              </button>
+              <button type="button" class="shape-option" data-shape="ellipse" title="Circle">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/></svg>
+              </button>
+              <button type="button" class="shape-option" data-shape="triangle" title="Triangle">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l8.66 15H3.34z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Lists -->
+        <div class="toolbar-group">
+          <button type="button" id="bulletListBtn" class="toolbar-btn" title="Bulleted List">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="4" cy="6" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.4" fill="currentColor" stroke="none"/><path d="M9 6h11M9 12h11M9 18h11"/></svg>
+          </button>
+          <button type="button" id="numberListBtn" class="toolbar-btn" title="Numbered List">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><text x="1" y="8.5" font-size="7" font-weight="700" fill="currentColor" stroke="none">1</text><text x="1" y="14.5" font-size="7" font-weight="700" fill="currentColor" stroke="none">2</text><text x="1" y="20.5" font-size="7" font-weight="700" fill="currentColor" stroke="none">3</text><path d="M9 6h11M9 12h11M9 18h11"/></svg>
+          </button>
+          <button type="button" id="letterListBtn" class="toolbar-btn" title="Lettered List">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><text x="1" y="8.5" font-size="7" font-weight="700" fill="currentColor" stroke="none">a</text><text x="1" y="14.5" font-size="7" font-weight="700" fill="currentColor" stroke="none">b</text><text x="1" y="20.5" font-size="7" font-weight="700" fill="currentColor" stroke="none">c</text><path d="M9 6h11M9 12h11M9 18h11"/></svg>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Structure -->
+        <div class="toolbar-group">
+          <div class="toolbar-dropdown-wrapper" id="layoutDropdownWrapper">
+            <button type="button" class="toolbar-btn" id="layoutToggleBtn" title="Choose Slide Layout">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h18"/></svg>
+            </button>
+            <div class="layout-dropdown-panel" id="layoutDropdownPanel">
+              <div class="layout-dropdown-grid" id="layoutDropdownGrid"></div>
+            </div>
+          </div>
+          <div class="toolbar-dropdown-wrapper" id="themeDropdownWrapper">
+            <button type="button" class="toolbar-btn" id="themeToggleBtn" title="Choose Theme (applies to the whole exercise)">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.8 2-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .9-1.8 1.9-1.8H16c2.2 0 4-1.8 4-4 0-4.4-3.6-7.8-8-7.8z"/><circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="9.5" cy="7.2" r="1" fill="currentColor" stroke="none"/><circle cx="14.5" cy="7.2" r="1" fill="currentColor" stroke="none"/><circle cx="16.3" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+            </button>
+            <div class="theme-dropdown-panel" id="themeDropdownPanel">
+              <div class="theme-dropdown-grid" id="themeDropdownGrid">
+                <div class="rail-thumb theme-thumb theme-swatch-blank active" data-bg="#ffffff" title="Blank"></div>
+                <div class="rail-thumb theme-thumb theme-swatch-teal" data-bg="linear-gradient(135deg, #1AA694, #0F7A6B)" title="Teal"></div>
+                <div class="rail-thumb theme-thumb theme-swatch-navy" data-bg="linear-gradient(135deg, #16264A, #2B3F6B)" title="Navy"></div>
+                <div class="rail-thumb theme-thumb theme-swatch-sunset" data-bg="linear-gradient(135deg, #E8A33D, #D64545)" title="Sunset"></div>
+                <div class="rail-thumb theme-thumb theme-swatch-violet" data-bg="linear-gradient(135deg, #4A5FC1, #16264A)" title="Violet"></div>
+                <div class="rail-thumb theme-thumb theme-swatch-mint" data-bg="linear-gradient(135deg, #E7F7F4, #1AA694)" title="Mint"></div>
+              </div>
+            </div>
+          </div>
+          <div class="toolbar-dropdown-wrapper" id="moduleDropdownWrapper">
+            <button type="button" class="toolbar-btn" id="moduleToggleBtn" title="Insert an existing Module/Inject">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>
+            </button>
+            <div class="module-dropdown-panel" id="moduleDropdownPanel">
+              <div class="module-dropdown-grid">
+                <div class="module-card" title="Initial Compromise — example module (visual only)">
+                  <div class="module-card-preview">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+                    <span class="module-card-line"></span>
+                    <span class="module-card-line short"></span>
+                  </div>
+                  <div class="module-card-label">Initial Compromise</div>
+                </div>
+                <div class="module-card" title="Ransom Note — example module (visual only)">
+                  <div class="module-card-preview">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+                    <span class="module-card-line"></span>
+                    <span class="module-card-line short"></span>
+                  </div>
+                  <div class="module-card-label">Ransom Note</div>
+                </div>
+                <div class="module-card" title="Media Inquiry — example module (visual only)">
+                  <div class="module-card-preview">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+                    <span class="module-card-line"></span>
+                    <span class="module-card-line short"></span>
+                  </div>
+                  <div class="module-card-label">Media Inquiry</div>
+                </div>
+                <div class="module-card" title="Data Exfiltration — example module (visual only)">
+                  <div class="module-card-preview">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+                    <span class="module-card-line"></span>
+                    <span class="module-card-line short"></span>
+                  </div>
+                  <div class="module-card-label">Data Exfiltration</div>
+                </div>
+                <div class="module-card" title="Executive Briefing — example module (visual only)">
+                  <div class="module-card-preview">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+                    <span class="module-card-line"></span>
+                    <span class="module-card-line short"></span>
+                  </div>
+                  <div class="module-card-label">Executive Briefing</div>
+                </div>
+                <div class="module-card" title="Lessons Learned — example module (visual only)">
+                  <div class="module-card-preview">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+                    <span class="module-card-line"></span>
+                    <span class="module-card-line short"></span>
+                  </div>
+                  <div class="module-card-label">Lessons Learned</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Font / size -->
+        <div class="toolbar-group">
+          <div class="select-wrapper toolbar-select-wrapper">
+            <select id="fontFamilySelect">
+              <option value="Arial, sans-serif">Arial</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="Helvetica, Arial, sans-serif">Helvetica</option>
+              <option value="'Times New Roman', serif">Times New Roman</option>
+            </select>
+            <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="select-wrapper toolbar-select-wrapper toolbar-size-wrapper">
+            <select id="fontSizeSelect">
+              <option value="12">12</option>
+              <option value="14">14</option>
+              <option value="16">16</option>
+              <option value="18" selected>18</option>
+              <option value="24">24</option>
+              <option value="32">32</option>
+              <option value="44">44</option>
+            </select>
+            <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Text formatting -->
+        <div class="toolbar-group">
+          <button type="button" id="boldBtn" class="toolbar-btn toolbar-btn-text toolbar-btn-bold" title="Bold">B</button>
+          <button type="button" id="italicBtn" class="toolbar-btn toolbar-btn-text toolbar-btn-italic" title="Italic">I</button>
+          <button type="button" id="underlineBtn" class="toolbar-btn toolbar-btn-text toolbar-btn-underline" title="Underline">U</button>
+          <div class="toolbar-dropdown-wrapper" id="textColorDropdownWrapper">
+            <button type="button" class="toolbar-color-btn" id="textColorToggleBtn" title="Text Colour">
+              <span class="letter">A</span>
+              <span class="color-bar" id="textColorBar"></span>
+            </button>
+            <div class="color-dropdown-panel" id="textColorDropdownPanel">
+              <div class="color-dropdown-grid" id="textColorGrid"></div>
+              <label class="color-dropdown-custom">
+                Custom
+                <input type="color" id="textColorCustomInput" value="#000000">
+              </label>
+            </div>
+          </div>
+          <div class="toolbar-dropdown-wrapper" id="highlightColorDropdownWrapper">
+            <button type="button" class="toolbar-color-btn" id="highlightColorToggleBtn" title="Highlight Colour">
+              <span class="letter">H</span>
+              <span class="color-bar highlight-bar" id="highlightColorBar"></span>
+            </button>
+            <div class="color-dropdown-panel" id="highlightColorDropdownPanel">
+              <div class="color-dropdown-grid" id="highlightColorGrid"></div>
+              <button type="button" class="color-dropdown-none" id="highlightColorNoneBtn">No highlight</button>
+              <label class="color-dropdown-custom">
+                Custom
+                <input type="color" id="highlightColorCustomInput" value="#F5C518">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Alignment -->
+        <div class="toolbar-group">
+          <button type="button" id="alignLeftBtn" class="toolbar-btn" data-align="left" title="Align Left">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
+          </button>
+          <button type="button" id="alignCenterBtn" class="toolbar-btn" data-align="center" title="Align Centre">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M5 18h14"/></svg>
+          </button>
+          <button type="button" id="alignRightBtn" class="toolbar-btn" data-align="right" title="Align Right">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M10 12h10M6 18h14"/></svg>
+          </button>
+          <button type="button" id="alignJustifyBtn" class="toolbar-btn" data-align="justify" title="Justify">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Box fill / border (text boxes and shapes) -->
+        <div class="toolbar-group">
+          <div class="toolbar-dropdown-wrapper" id="boxFillDropdownWrapper">
+            <button type="button" class="toolbar-color-btn" id="boxFillToggleBtn" title="Box Fill Colour">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/></svg>
+              <span class="color-bar" id="boxFillBar"></span>
+            </button>
+            <div class="color-dropdown-panel" id="boxFillDropdownPanel">
+              <div class="color-dropdown-grid" id="boxFillGrid"></div>
+              <button type="button" class="color-dropdown-none" id="boxFillNoneBtn">Transparent</button>
+              <label class="color-dropdown-custom">
+                Custom
+                <input type="color" id="boxFillCustomInput" value="#1AA694">
+              </label>
+            </div>
+          </div>
+          <div class="toolbar-dropdown-wrapper" id="boxBorderDropdownWrapper">
+            <button type="button" class="toolbar-color-btn" id="boxBorderToggleBtn" title="Box Border Colour">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="4 3"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/></svg>
+              <span class="color-bar" id="boxBorderBar"></span>
+            </button>
+            <div class="color-dropdown-panel" id="boxBorderDropdownPanel">
+              <div class="color-dropdown-grid" id="boxBorderGrid"></div>
+              <button type="button" class="color-dropdown-none" id="boxBorderNoneBtn">No border</button>
+              <label class="color-dropdown-custom">
+                Custom
+                <input type="color" id="boxBorderCustomInput" value="#16264A">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- Arrange (layer order) -->
+        <div class="toolbar-group">
+          <div class="toolbar-dropdown-wrapper" id="arrangeDropdownWrapper">
+            <button type="button" class="toolbar-btn" id="arrangeToggleBtn" title="Arrange">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="9.5" width="11" height="11" rx="1.5"/><rect x="9.5" y="3.5" width="11" height="11" rx="1.5"/></svg>
+            </button>
+            <div class="arrange-dropdown-panel" id="arrangeDropdownPanel">
+              <div class="arrange-dropdown-grid">
+                <button type="button" class="arrange-option" data-arrange="forward" title="Forward">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="11" height="11" rx="1.5"/><rect x="9" y="4" width="11" height="11" rx="1.5"/><path d="M19.5 1.5v3.5M17.75 3.25h3.5"/></svg>
+                  <span>Forward</span>
+                </button>
+                <button type="button" class="arrange-option" data-arrange="backward" title="Backward">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="11" height="11" rx="1.5"/><rect x="9" y="4" width="11" height="11" rx="1.5"/><path d="M17.75 3.25h3.5"/></svg>
+                  <span>Backward</span>
+                </button>
+                <button type="button" class="arrange-option" data-arrange="front" title="To front">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="11" height="11" rx="1.5" opacity="0.35"/><rect x="9" y="4" width="11" height="11" rx="1.5"/></svg>
+                  <span>To front</span>
+                </button>
+                <button type="button" class="arrange-option" data-arrange="back" title="To back">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="11" height="11" rx="1.5"/><rect x="9" y="4" width="11" height="11" rx="1.5" opacity="0.35"/></svg>
+                  <span>To back</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="toolbar-divider"></div>
+
+        <!-- View controls — pushed to the far right along with
+             everything after it -->
+        <div class="toolbar-group toolbar-group-right">
+          <button type="button" class="toolbar-panel-toggle active" id="toggleSlidesBtn" data-target="slides" title="Show/hide Slides panel">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M14 4v16"/></svg>
+            <span>Slides</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ============ WORKSPACE (canvas + slide rail) ============ -->
+      <div class="builder-workspace">
+
+        <div class="builder-canvas-area">
+          <div class="slide-canvas" id="slideCanvas">
+            <div class="slide-layout-render" id="slideLayoutRender"></div>
+            <span class="slide-canvas-logo-badge slide-canvas-logo-left" title="Excyte logo — applied automatically">
+              <img class="slide-canvas-logo-img" src="../assets/excyte-logo-full.png" alt="Excyte">
+            </span>
+            <span class="slide-canvas-logo slide-canvas-logo-right" title="Organisation logo — applied automatically">Org Logo</span>
+            <span class="slide-canvas-label" id="slideCanvasLabel">Slide 1</span>
+            <div class="object-layer" id="objectLayer"></div>
+            <div class="canvas-marquee" id="canvasMarquee"></div>
+            <div class="snap-guide snap-guide-v" id="snapGuideV"></div>
+            <div class="snap-guide snap-guide-h" id="snapGuideH"></div>
+            <div class="hf-overlay" id="hfOverlay"></div>
+            <div class="slide-header" id="slideHeader" contenteditable="false" data-placeholder="Click to add header"></div>
+            <div class="slide-footer" id="slideFooter" contenteditable="false" data-placeholder="Click to add footer"></div>
+          </div>
+        </div>
+
+        <aside class="side-rail slide-rail" id="slideRail">
+          <div class="side-rail-label">Slides</div>
+          <div class="thumb-list" id="slideThumbList"></div>
+        </aside>
+
+      </div>
+
+    </div>
+
+    </div>
+
+    <!-- ============ SLIDE NAME ============
+         Per-slide, like the notes below it — switching slides in the
+         rail swaps this out too. Purely a facilitator-facing label
+         (e.g. "Inject 3 — Ransom Note"), not shown to participants. -->
+    <div class="builder-slide-name-section">
+      <label class="slide-name-label" for="slideNameInput">Slide / Inject Name</label>
+      <input type="text" class="slide-name-input" id="slideNameInput" placeholder="Untitled slide" maxlength="120">
+    </div>
+
+    <!-- ============ OBSERVATIONS & DISCUSSION POINTS ============
+         Below the slide canvas, above the page footer — per-slide,
+         so switching slides in the rail swaps these out too. -->
+    <div class="builder-notes-section">
+      <div class="notes-col">
+        <div class="notes-col-header">
+          <h3 class="notes-col-title">Discussion Points</h3>
+          <button type="button" class="notes-add-btn" id="addDiscussionPointBtn">+ Add</button>
+        </div>
+        <div class="notes-list" id="discussionPointsList"></div>
+      </div>
+
+      <div class="notes-col">
+        <div class="notes-col-header">
+          <h3 class="notes-col-title">Observations</h3>
+          <button type="button" class="notes-add-btn" id="addObservationBtn">+ Add</button>
+        </div>
+        <div class="notes-list" id="observationsList"></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="terms-conditions.html">Terms &amp; Conditions</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-policy.html">Cookie Policy</a>
+      </div>
+      <div class="footer-credit">Software development by <a href="https://www.geeks.ltd/" target="_blank" rel="noopener">Geeks</a></div>
+    </footer>
+
+  </main>
+
+  <!-- ============ DELETE SLIDE CONFIRMATION MODAL ============ -->
+  <div class="modal-overlay" id="deleteSlideModal">
+    <div class="modal-box">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#1AA694" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 6c-2-1.5-5-2-8-1v13c3-1 6-.5 8 1 2-1.5 5-2 8-1V5c-3-1-6-.5-8 1z"/>
+          <path d="M12 6v13"/>
+        </svg>
+      </div>
+      <h2 class="modal-title">Delete this slide?</h2>
+      <p class="modal-message">This will permanently remove the slide. This can't be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" id="deleteSlideCancelBtn">Cancel</button>
+        <button type="button" class="save-btn" id="deleteSlideConfirmBtn">Yes, Delete Slide</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DELIVERY VIEWER MODAL (Exercise Preview) ============ -->
+  <div id="builderPreviewModal" class="builder-preview-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; overflow: hidden;">
+    <!-- This will be populated by JavaScript with the delivery viewer content -->
+    <div id="previewDeliveryContainer"></div>
+  </div>
+
+  <!-- ============ SAVE EXERCISE MODAL ============ -->
+  <div class="modal-overlay" id="saveExerciseModal">
+    <div class="modal-box">
+      <h2 class="modal-title">Save Exercise</h2>
+      <p class="modal-message">Give this exercise a name and choose which theme it belongs to.</p>
+      <div class="modal-form-field">
+        <label for="saveExerciseNameInput">Exercise name<span class="required-mark">*</span></label>
+        <input type="text" class="text-input" id="saveExerciseNameInput" placeholder="e.g. Operation Grey Harbour">
+        <p class="modal-field-error" id="saveExerciseNameError">Please enter a name for this exercise.</p>
+      </div>
+      <div class="modal-form-field">
+        <label for="saveExerciseThemeSelect">Theme</label>
+        <div class="select-wrapper">
+          <select id="saveExerciseThemeSelect"></select>
+          <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+      <p class="modal-field-error" id="saveExerciseStorageError">Couldn't save — your browser's storage is full. Try removing an image or deleting an old exercise, then save again.</p>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" id="saveExerciseCancelBtn">Cancel</button>
+        <button type="button" class="save-btn" id="saveExerciseConfirmBtn">Save Exercise</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ UNSAVED CHANGES MODAL ============ -->
+  <div class="modal-overlay" id="unsavedChangesModal">
+    <div class="modal-box">
+      <h2 class="modal-title">Unsaved changes</h2>
+      <p class="modal-message">This exercise has changes that haven't been saved yet. Do you want to save before leaving?</p>
+      <div class="modal-actions modal-actions-stacked">
+        <button type="button" class="save-btn" id="unsavedSaveBtn">Save &amp; Leave</button>
+        <button type="button" class="discard-btn" id="unsavedDiscardBtn">Leave Without Saving</button>
+        <button type="button" class="cancel-btn" id="unsavedCancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BUILDER ENTRY MODAL (new vs. edit) ============ -->
+  <div class="modal-overlay" id="builderEntryModal">
+    <div class="modal-box">
+
+      <div id="builderEntryChoiceStep">
+        <h2 class="modal-title">Exercise Builder</h2>
+        <p class="modal-message">Start a brand new exercise, or carry on editing one you've already saved.</p>
+        <div class="modal-actions modal-actions-stacked">
+          <button type="button" class="save-btn" id="builderEntryCreateBtn">Create New Exercise</button>
+          <button type="button" class="cancel-btn" id="builderEntryEditBtn">Edit Existing Exercise</button>
+        </div>
+      </div>
+
+      <div id="builderEntryEditStep" style="display:none;">
+        <h2 class="modal-title">Edit Existing Exercise</h2>
+        <p class="modal-message" id="builderEntryEditEmptyMessage">You haven't saved any exercises yet.</p>
+        <div id="builderEntryEditFields" style="display:none;">
+          <p class="modal-message">Only exercises you've saved yourself can be edited here.</p>
+          <div class="modal-form-field">
+            <label for="builderEntryThemeSelect">Theme</label>
+            <div class="select-wrapper">
+              <select id="builderEntryThemeSelect"></select>
+              <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div class="modal-form-field">
+            <label for="builderEntryExerciseSelect">Exercise</label>
+            <div class="select-wrapper">
+              <select id="builderEntryExerciseSelect"></select>
+              <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions modal-actions-stacked">
+          <button type="button" class="save-btn" id="builderEntryEditConfirmBtn" disabled>Edit Exercise</button>
+          <button type="button" class="cancel-btn" id="builderEntryBackBtn">Back</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="../js/menu.js"></script>
+<script src="../js/exercise-builder.js"></script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excyte | Exercise Delivery</title>
+<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/builder.css">
+<link rel="stylesheet" href="../css/delivery.css">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body class="delivery-body" data-role="facilitator">
+
+  <div id="slideCanvas">
+    <img id="slideImage" alt="">
+    <div id="slideContent">
+      <div id="slideNumber">1</div>
+      <div id="slideTitleText">Exercise Title / Welcome</div>
+    </div>
+    <!-- Builder preview only — renders the actual authored slide
+         (layout, text boxes, tables, images) using the same markup
+         and CSS as the builder canvas itself. -->
+    <div class="slide-canvas" id="builderSlideCanvas" style="display:none;">
+      <div class="slide-layout-render" id="builderSlideLayoutRender"></div>
+      <span class="slide-canvas-logo-badge slide-canvas-logo-left" title="Excyte logo">
+        <img class="slide-canvas-logo-img" src="../assets/excyte-logo-full.png" alt="Excyte">
+      </span>
+      <span class="slide-canvas-logo slide-canvas-logo-right">Org Logo</span>
+      <div class="object-layer" id="builderObjectLayer"></div>
+    </div>
+  </div>
+
+  <div id="topBar">
+    <span id="slideCounter">Slide 1 / 12</span>
+    <span id="eventTitle">Exercise</span>
+    <div id="topRight">
+      <button id="finishBtn" type="button">&#10003; Finish Exercise</button>
+      <span id="elapsed">00:00:00</span>
+      <button id="exitBtn" type="button">Exit</button>
+    </div>
+  </div>
+
+  <button class="nav-arrow" id="prevBtn" type="button" aria-label="Previous slide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <button class="nav-arrow" id="nextBtn" type="button" aria-label="Next slide">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+
+  <div id="dotTrack"></div>
+
+  <!-- ATTENDEES PANEL -->
+  <div class="delivery-panel collapsed" id="attendeesPanel">
+    <div class="delivery-panel-header" id="attendeesPanelHeader">
+      <svg class="delivery-panel-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="delivery-panel-title">Attendees</span>
+      <button class="delivery-panel-toggle" id="attendeesToggle" type="button">
+        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="delivery-panel-body" id="attendeesBody">
+      <div class="attendee-group">
+        <div class="attendee-group-label">Facilitators</div>
+        <div id="facilitatorsList"></div>
+      </div>
+      <div class="attendee-group">
+        <div class="attendee-group-label">Observers</div>
+        <div id="observersList"></div>
+      </div>
+      <button class="participants-toggle" id="participantsToggle" type="button">
+        <svg class="chevron" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        Participants
+        <span class="attendee-count-badge" id="participantCount">0</span>
+      </button>
+      <div id="participantsList">
+        <div id="participantsInner"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROMPTS PANEL -->
+  <div class="delivery-panel" id="promptsPanel">
+    <div class="delivery-panel-header" id="promptsPanelHeader">
+      <svg class="delivery-panel-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span class="delivery-panel-title">Discussion Points</span>
+      <button class="delivery-panel-toggle" id="promptsToggle" type="button">
+        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="delivery-panel-body" id="promptsBody">
+      <div id="promptsList"></div>
+    </div>
+  </div>
+
+  <!-- OBSERVATIONS PANEL (observer only) -->
+  <div class="delivery-panel" id="observationsPanel">
+    <div class="delivery-panel-header" id="observationsPanelHeader">
+      <svg class="delivery-panel-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="delivery-panel-title">Observations</span>
+      <button class="delivery-panel-toggle" id="observationsToggle" type="button">
+        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="delivery-panel-body" id="observationsBody">
+      <div class="observation-checklist" id="observationChecklist"></div>
+      <textarea class="observation-notes" id="observationNotes" rows="4" placeholder="Write your observations for this slide&hellip;"></textarea>
+    </div>
+  </div>
+
+  <!-- OBSERVATION POINTS PANEL (preview only — observer view + builder preview) -->
+  <div class="delivery-panel" id="observationPointsPanel">
+    <div class="delivery-panel-header" id="observationPointsPanelHeader">
+      <svg class="delivery-panel-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="delivery-panel-title">Observations</span>
+      <button class="delivery-panel-toggle" id="observationPointsToggle" type="button">
+        <svg class="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="delivery-panel-body" id="observationPointsBody">
+      <div id="observationPointsList"></div>
+    </div>
+  </div>
+
+  <!-- EXIT MODAL -->
+  <div class="modal-overlay" id="exitModal">
+    <div class="modal-box">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#1AA694" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 6c-2-1.5-5-2-8-1v13c3-1 6-.5 8 1 2-1.5 5-2 8-1V5c-3-1-6-.5-8 1z"/>
+          <path d="M12 6v13"/>
+        </svg>
+      </div>
+      <h2 class="modal-title">Exit exercise?</h2>
+      <p class="modal-message">Your current slide position won't be saved.</p>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" id="exitCancelBtn">Stay in exercise</button>
+        <button type="button" class="save-btn" id="exitConfirmBtn">Yes, exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINISH CONFIRMATION MODAL -->
+  <div class="modal-overlay" id="finishModal">
+    <div class="modal-box">
+      <h2 class="modal-title">Finish exercise?</h2>
+      <p class="modal-message">This will mark the exercise as complete for everyone in the session.</p>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" id="finishCancelBtn">Cancel</button>
+        <button type="button" class="confirm-green-btn" id="finishConfirmBtn">Yes, finish exercise</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINISH LOADING SCREEN -->
+  <div id="finishLoadingScreen">
+    <div class="finish-spinner"></div>
+    <div class="finish-loading-text">Finishing exercise&hellip;</div>
+  </div>
+
+  <!-- REVIEW / RATING MODAL (participant only) -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal-box">
+      <h2 class="modal-title">How was the exercise?</h2>
+      <p class="modal-message">Your feedback helps improve future exercises.</p>
+      <div class="star-rating" id="starRating">
+        <button type="button" class="star" data-value="1">&#9733;</button>
+        <button type="button" class="star" data-value="2">&#9733;</button>
+        <button type="button" class="star" data-value="3">&#9733;</button>
+        <button type="button" class="star" data-value="4">&#9733;</button>
+        <button type="button" class="star" data-value="5">&#9733;</button>
+      </div>
+      <p class="rating-error" id="ratingError">Please select a rating before finishing.</p>
+      <textarea id="reviewComment" class="review-comment" rows="3" placeholder="Any comments? (optional)"></textarea>
+      <div class="modal-actions">
+        <button type="button" class="confirm-green-btn" id="submitReviewBtn">Finish</button>
+      </div>
+    </div>
+  </div>
+
+<script src="../js/exercise-delivery.js"></script>
+</body>
+</html>

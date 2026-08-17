@@ -1,0 +1,787 @@
+/* ============================================================
+   EXERCISE DELIVERY — full-screen kiosk view, no sidebar/app-chrome.
+   Black slide canvas (placeholder — no real slide deck). Floating
+   chrome (top pill, nav arrows, dot track, panels) uses a translucent
+   glass treatment, with the Excyte teal as the accent throughout.
+   Modals on this page use a dark theme (overriding the shared light
+   modal styling from styles.css, scoped to this page only).
+   ============================================================ */
+
+.delivery-body {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #000000;
+}
+
+#slideCanvas {
+  position: fixed;
+  inset: 0;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Builder preview only — #slideCanvas becomes the sizing container
+   for the nested .slide-canvas (imported from builder.css), which
+   sizes itself in cqw/cqh relative to a container named "canvas-area"
+   — see css/builder.css for why that's needed over max-width/height. */
+body.builder-preview-mode #slideCanvas {
+  container-type: size;
+  container-name: canvas-area;
+}
+
+#builderSlideCanvas {
+  transition: opacity 0.2s ease;
+  /* builder.css puts a 1px border on .slide-canvas to delineate the
+     card against the builder's own grey editing background — against
+     this page's full-bleed black backdrop it just reads as a stray
+     thin light line around the slide, especially on non-white
+     themes, so drop it here. */
+  border: none;
+}
+
+/* Static preview — none of the builder's own click/drag/edit
+   interactions apply here, just the visuals. */
+body.builder-preview-mode .text-box,
+body.builder-preview-mode .canvas-table-wrap,
+body.builder-preview-mode .canvas-image-wrap {
+  pointer-events: none;
+  cursor: default;
+}
+
+#slideImage {
+  display: none;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: opacity 0.2s ease;
+}
+
+#slideContent {
+  text-align: center;
+  transition: opacity 0.2s ease;
+}
+
+#slideNumber {
+  font-size: 14vh;
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(255,255,255,0.12);
+}
+
+#slideTitleText {
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  margin-top: 14px;
+  letter-spacing: 0.02em;
+}
+
+/* ============ TOP BAR ============ */
+#topBar {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 48px;
+  padding: 0 20px;
+  min-width: 480px;
+  border-radius: 24px;
+  background: rgba(10,15,40,0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+#slideCounter {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+#eventTitle {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 10px;
+}
+
+#topRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#elapsed {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--teal);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+#exitBtn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 6px 16px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+#exitBtn:hover {
+  background: rgba(255,80,80,0.25);
+  border-color: rgba(255,100,100,0.5);
+}
+
+/* Finish Exercise — only shown once the last slide is reached */
+#finishBtn {
+  background: linear-gradient(135deg,#27ae60,#1e8449);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+  display: none;
+}
+
+#finishBtn:hover { opacity: 0.85; }
+#finishBtn.visible { display: block; }
+
+/* ============ NAV ARROWS ============ */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(10,15,40,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.nav-arrow svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+
+.nav-arrow:hover {
+  background: rgba(26,166,148,0.3);
+  border-color: var(--teal);
+}
+
+.nav-arrow:disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+#prevBtn { left: 20px; }
+#nextBtn { right: 20px; }
+
+/* ============ DOT TRACK ============ */
+#dotTrack {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(10,15,40,0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 8px 16px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.dot.active {
+  background: var(--teal);
+  transform: scale(1.3);
+}
+
+.dot:hover:not(.active) {
+  background: rgba(255,255,255,0.5);
+}
+
+/* ============ FLOATING PANELS ============ */
+.delivery-panel {
+  position: fixed;
+  z-index: 80;
+  width: 250px;
+  background: rgba(15,25,50,0.55);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Bottom-anchored (not top-anchored) so expanding a collapsed panel
+   grows it upward, away from the bottom edge, instead of downward
+   off the bottom of the screen — collapsing then just shrinks it
+   back down to the same anchored spot, no repositioning needed. */
+#attendeesPanel { bottom: 70px; right: 20px; }
+#promptsPanel { bottom: 70px; left: 20px; width: 280px; }
+#observationsPanel { bottom: 70px; right: 320px; width: 280px; }
+#observationPointsPanel { bottom: 70px; left: 320px; width: 280px; }
+
+.delivery-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  cursor: move;
+  transition: border-color 0.2s ease;
+}
+
+.delivery-panel.collapsed .delivery-panel-header {
+  border-bottom-color: transparent;
+}
+
+.delivery-panel-icon {
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+.delivery-panel-title {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+
+.delivery-panel-toggle {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  transition: color 0.15s ease;
+}
+
+.delivery-panel-toggle:hover { color: #ffffff; }
+
+.delivery-panel-toggle .chevron {
+  transition: transform 0.2s ease;
+}
+
+.delivery-panel.collapsed .delivery-panel-toggle .chevron {
+  transform: rotate(-90deg);
+}
+
+.delivery-panel-body {
+  padding: 14px;
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.25s ease, padding 0.25s ease, opacity 0.2s ease;
+}
+
+.delivery-panel.collapsed .delivery-panel-body {
+  max-height: 0 !important;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+}
+
+/* Hide the floating panels entirely while any modal is open, rather
+   than letting them show through/behind the dimmed backdrop */
+body:has(.modal-overlay.open) .delivery-panel {
+  display: none;
+}
+
+/* ============ ATTENDEES CONTENT ============ */
+.attendee-group { margin-bottom: 14px; }
+.attendee-group:last-child { margin-bottom: 0; }
+
+.attendee-group-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.attendee-name {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  padding: 3px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.attendee-name.empty {
+  color: rgba(255,255,255,0.4);
+  font-style: italic;
+  font-size: 12px;
+}
+
+.attendee-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-facilitator { background: var(--teal); }
+.dot-observer { background: #E8A33D; }
+.dot-participant { background: rgba(255,255,255,0.35); }
+
+.participants-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
+  transition: color 0.15s ease;
+}
+
+.participants-toggle:hover { color: rgba(255,255,255,0.75); }
+
+.participants-toggle .chevron {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.participants-toggle.open .chevron {
+  transform: rotate(90deg);
+}
+
+.attendee-count-badge {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin-left: auto;
+}
+
+#participantsList {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+}
+
+#participantsList.open {
+  max-height: 300px;
+}
+
+#participantsInner {
+  padding-top: 8px;
+}
+
+/* ============ PROMPTS CONTENT ============ */
+.prompt-item {
+  font-size: 13px;
+  color: rgba(255,255,255,0.78);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  line-height: 1.5;
+  position: relative;
+  padding-left: 16px;
+}
+
+.prompt-item:last-child { border-bottom: none; }
+
+.prompt-item::before {
+  content: '\203A';
+  position: absolute;
+  left: 0;
+  color: var(--teal);
+  font-weight: 700;
+}
+
+/* ============ OBSERVATION POINTS PANEL CONTENT ============ */
+.obs-point-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.obs-point-item:last-child { border-bottom: none; }
+
+.obs-point-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.4;
+}
+
+.obs-point-input {
+  margin-top: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  font-family: inherit;
+  font-size: 12.5px;
+  color: #ffffff;
+  outline: none;
+}
+
+.obs-point-input::placeholder { color: rgba(255,255,255,0.35); }
+
+.obs-point-input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(26,166,148,0.16);
+}
+
+.obs-point-checkbox-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.obs-point-checkbox-row .obs-point-text { flex: 1; }
+
+.obs-point-checkbox-row .obs-point-check {
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.obs-point-options {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-left: 2px;
+}
+
+.obs-point-options .observation-check { padding: 0; }
+
+/* ============ MODALS — dark theme on this page ============
+   Overrides the shared white .modal-overlay/.modal-box from
+   styles.css. Only applies here since only this page loads
+   delivery.css. */
+.modal-overlay {
+  background: rgba(5,10,30,0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.modal-box {
+  background: #0f1830;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+}
+
+.modal-title {
+  color: #ffffff;
+}
+
+.modal-message {
+  color: rgba(255,255,255,0.6);
+}
+
+.cancel-btn {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+
+.cancel-btn:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.28);
+  color: #ffffff;
+}
+
+.save-btn {
+  background: var(--teal);
+  color: #ffffff;
+}
+
+.save-btn:hover {
+  background: var(--teal-dark);
+}
+
+.confirm-green-btn {
+  background: #27ae60;
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.confirm-green-btn:hover {
+  background: #1e8449;
+}
+
+/* ============ OBSERVATIONS CONTENT (observer only) ============ */
+.observation-checklist {
+  margin-bottom: 12px;
+}
+
+.observation-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.8);
+  padding: 6px 0;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.observation-check input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.obs-checkbox {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  border: 2px solid rgba(255,255,255,0.3);
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.observation-check:hover .obs-checkbox {
+  border-color: var(--teal);
+}
+
+.observation-check input:checked + .obs-checkbox {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.observation-check input:checked + .obs-checkbox::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.obs-radio {
+  border-radius: 50%;
+}
+
+.observation-check input:checked + .obs-radio::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border: none;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: none;
+  margin-bottom: 0;
+}
+
+.observation-notes {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 12.5px;
+  color: #ffffff;
+  resize: vertical;
+}
+
+.observation-notes::placeholder { color: rgba(255,255,255,0.35); }
+
+.observation-notes:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+/* ============ FINISH LOADING SCREEN ============ */
+#finishLoadingScreen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #0a0f1e;
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#finishLoadingScreen.open {
+  display: flex;
+}
+
+.finish-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(26,166,148,0.2);
+  border-top-color: var(--teal);
+  border-radius: 50%;
+  animation: finishSpin 0.85s linear infinite;
+}
+
+@keyframes finishSpin {
+  to { transform: rotate(360deg); }
+}
+
+.finish-loading-text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  font-weight: 600;
+}
+
+/* ============ STAR RATING (review modal) ============ */
+.star-rating {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.star {
+  background: none;
+  border: none;
+  font-size: 30px;
+  line-height: 1;
+  color: rgba(255,255,255,0.2);
+  cursor: pointer;
+  padding: 2px;
+  transition: color 0.15s ease, transform 0.1s ease;
+}
+
+.star:hover { transform: scale(1.1); }
+.star.filled { color: #F5B400; }
+
+.rating-error {
+  display: none;
+  color: #FF6B6B;
+  font-size: 12.5px;
+  margin-top: -6px;
+  margin-bottom: 16px;
+}
+
+.rating-error.show { display: block; }
+
+.review-comment {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  color: #ffffff;
+  resize: vertical;
+  margin-bottom: 20px;
+}
+
+.review-comment::placeholder { color: rgba(255,255,255,0.35); }
+
+.review-comment:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+/* ============ ROLE-BASED VISIBILITY ============ */
+/* Observations panel only exists for the Observer role */
+#observationsPanel {
+  display: none;
+}
+
+body[data-role="observer"] #observationsPanel {
+  display: block;
+}
+
+/* Observation Points panel (preview, unconnected) — observer role + builder preview only */
+#observationPointsPanel {
+  display: none;
+}
+
+body[data-role="observer"] #observationPointsPanel,
+body.builder-preview-mode #observationPointsPanel {
+  display: block;
+}
+
+/* Observer: same panels as Facilitator (Attendees + Prompts) — just no nav control */
+body[data-role="observer"] .nav-arrow,
+body[data-role="observer"] #dotTrack {
+  display: none;
+}
+
+/* Participant: slide + top bar only — nothing else */
+body[data-role="participant"] #promptsPanel,
+body[data-role="participant"] #attendeesPanel,
+body[data-role="participant"] .nav-arrow,
+body[data-role="participant"] #dotTrack {
+  display: none;
+}

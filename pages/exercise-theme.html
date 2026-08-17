@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excyte | Ransomware &amp; Extortion</title>
+<link rel="stylesheet" href="../css/styles.css">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body data-page="exercises">
+
+<div class="app">
+
+  <!-- ============ SIDEBAR (injected by js/menu.js) ============ -->
+  <div id="sidebar-placeholder"></div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <div class="detail-header">
+      <h1 class="page-title" id="pageTitle">Ransomware &amp; Extortion</h1>
+      <button class="back-btn" type="button">Back</button>
+    </div>
+
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="exerciseNameFilter">Exercise Name</label>
+        <input type="text" id="exerciseNameFilter" class="text-input" placeholder="">
+      </div>
+
+      <div class="filter-group">
+        <label for="authorFilter">Author Name</label>
+        <div class="select-wrapper">
+          <select id="authorFilter">
+            <option value="all">Nothing selected</option>
+          </select>
+          <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="orgFilter">Organisations</label>
+        <div class="select-wrapper">
+          <select id="orgFilter">
+            <option value="all">Nothing selected</option>
+          </select>
+          <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-panel exercise-cards-panel" id="tablePanel">
+      <div class="cards-grid" id="exerciseCardsGrid"></div>
+
+      <p class="no-results" id="noResults">No exercises match the selected filters.</p>
+      <p class="no-exercises" id="noExercises">There are no exercises to display.</p>
+    </div>
+
+    <div class="pagination" id="pagination">
+      <a href="#" class="page-btn">&laquo;</a>
+      <a href="#" class="page-btn active">1</a>
+      <a href="#" class="page-btn">2</a>
+      <a href="#" class="page-btn">&raquo;</a>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="terms-conditions.html">Terms &amp; Conditions</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-policy.html">Cookie Policy</a>
+      </div>
+      <div class="footer-credit">Software development by <a href="https://www.geeks.ltd/" target="_blank" rel="noopener">Geeks</a></div>
+    </footer>
+
+  </main>
+</div>
+
+<script src="../js/menu.js"></script>
+<script src="../js/exercise-theme.js"></script>
+</body>
+</html>

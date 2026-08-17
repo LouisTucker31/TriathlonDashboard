@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excyte | Clickbait Crisis</title>
+<link rel="stylesheet" href="../css/styles.css">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body data-page="exercises">
+
+<div class="app">
+
+  <!-- ============ SIDEBAR (injected by js/menu.js) ============ -->
+  <div id="sidebar-placeholder"></div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <div class="detail-header">
+      <h1 class="page-title" id="pageTitle">Clickbait Crisis</h1>
+      <div class="header-actions">
+        <button class="cancel-btn" type="button" id="editExerciseBtn" style="display:none;">Edit</button>
+        <button class="cancel-btn" type="button" id="deleteExerciseBtn" style="display:none;">Delete</button>
+        <button class="create-btn" type="button">Create New Event</button>
+        <button class="back-btn" type="button">Back</button>
+      </div>
+    </div>
+
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="statusFilter">Status</label>
+        <div class="select-wrapper">
+          <select id="statusFilter">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+          <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label for="orgFilter">Organisations</label>
+        <div class="select-wrapper">
+          <select id="orgFilter">
+            <option value="all">Nothing selected</option>
+            <option value="GDAK">GDAK</option>
+          </select>
+          <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-panel no-data" id="tablePanel">
+      <table class="exercise-table" id="eventsTable">
+        <thead>
+          <tr>
+            <th data-sort="date">Date &amp; Time of Event<svg class="sort-icon" viewBox="0 0 10 16" width="8" height="12"><path class="arrow-up" d="M5 0L9 6H1Z"/><path class="arrow-down" d="M5 16L1 10H9Z"/></svg></th>
+            <th data-sort="org">Organisations<svg class="sort-icon" viewBox="0 0 10 16" width="8" height="12"><path class="arrow-up" d="M5 0L9 6H1Z"/><path class="arrow-down" d="M5 16L1 10H9Z"/></svg></th>
+            <th data-sort="status">Status<svg class="sort-icon" viewBox="0 0 10 16" width="8" height="12"><path class="arrow-up" d="M5 0L9 6H1Z"/><path class="arrow-down" d="M5 16L1 10H9Z"/></svg></th>
+            <th>Facilitate Exercise</th>
+            <th>Observe</th>
+            <th>Join Exercise</th>
+            <th>Edit Event</th>
+            <th>End Event</th>
+          </tr>
+        </thead>
+        <tbody id="eventsTableBody"></tbody>
+      </table>
+
+      <p class="no-results" id="noResults">No events match the selected filters.</p>
+      <p class="no-exercises" id="noEvents">There are no exercise events to display.</p>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="terms-conditions.html">Terms &amp; Conditions</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-policy.html">Cookie Policy</a>
+      </div>
+      <div class="footer-credit">Software development by <a href="https://www.geeks.ltd/" target="_blank" rel="noopener">Geeks</a></div>
+    </footer>
+
+  </main>
+
+  <!-- ============ END EVENT CONFIRMATION MODAL ============ -->
+  <div class="modal-overlay" id="endEventModal">
+    <div class="modal-box">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#1AA694" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 6c-2-1.5-5-2-8-1v13c3-1 6-.5 8 1 2-1.5 5-2 8-1V5c-3-1-6-.5-8 1z"/>
+          <path d="M12 6v13"/>
+        </svg>
+      </div>
+      <h2 class="modal-title">End this event?</h2>
+      <p class="modal-message" id="modalMessage">This will end the event and it will no longer be active. This can't be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" id="modalCancelBtn">Cancel</button>
+        <button type="button" class="save-btn" id="modalConfirmBtn">Yes, End Event</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DELETE EXERCISE CONFIRMATION MODAL ============ -->
+  <div class="modal-overlay" id="deleteExerciseModal">
+    <div class="modal-box">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#1AA694" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 6c-2-1.5-5-2-8-1v13c3-1 6-.5 8 1 2-1.5 5-2 8-1V5c-3-1-6-.5-8 1z"/>
+          <path d="M12 6v13"/>
+        </svg>
+      </div>
+      <h2 class="modal-title">Delete this exercise?</h2>
+      <p class="modal-message">This will permanently delete the exercise and all its slides. This can't be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" id="deleteExerciseCancelBtn">Cancel</button>
+        <button type="button" class="save-btn" id="deleteExerciseConfirmBtn">Yes, Delete Exercise</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../js/menu.js"></script>
+<script src="../js/exercise-events.js"></script>
+</body>
+</html>

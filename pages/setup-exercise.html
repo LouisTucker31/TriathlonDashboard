@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excyte | Setup Exercise</title>
+<link rel="stylesheet" href="../css/styles.css">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body data-page="exercises">
+
+<div class="app">
+
+  <!-- ============ SIDEBAR (injected by js/menu.js) ============ -->
+  <div id="sidebar-placeholder"></div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <div class="detail-header">
+      <h1 class="page-title" id="pageTitle">Setup Exercise - Silent Sender (ERMM L1)</h1>
+      <div class="header-actions">
+        <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+        <button type="button" class="save-btn" id="saveBtn">Save</button>
+      </div>
+    </div>
+
+    <div class="setup-form">
+
+      <div class="form-field">
+        <label>Organisation</label>
+        <div class="dropdown-field" data-mode="multi" id="orgField">
+          <button type="button" class="dropdown-trigger">
+            <span class="dropdown-value">Nothing selected</span>
+            <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="dropdown-panel">
+            <div class="dropdown-search-wrap">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" class="dropdown-search" placeholder="Search organisations">
+            </div>
+            <ul class="dropdown-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Date and time of Exercise<span class="required-mark">*</span></label>
+        <div class="datetime-row">
+          <input type="datetime-local" class="text-input datetime-input" id="exerciseDateTime">
+          <button type="button" class="today-btn" id="todayBtn">Today</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Facilitator<span class="required-mark">*</span></label>
+        <div class="dropdown-field" data-mode="single" id="facilitatorField">
+          <button type="button" class="dropdown-trigger">
+            <span class="dropdown-value">Search facilitators</span>
+            <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="dropdown-panel">
+            <div class="dropdown-search-wrap">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" class="dropdown-search" placeholder="Search people">
+            </div>
+            <ul class="dropdown-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Observers</label>
+        <div class="dropdown-field" data-mode="multi" id="observersField">
+          <button type="button" class="dropdown-trigger">
+            <span class="dropdown-value">Nothing selected</span>
+            <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="dropdown-panel">
+            <div class="dropdown-search-wrap">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" class="dropdown-search" placeholder="Search people">
+            </div>
+            <ul class="dropdown-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>Invite Participants</label>
+        <div class="dropdown-field" data-mode="multi" id="participantsField">
+          <button type="button" class="dropdown-trigger">
+            <span class="dropdown-value">Nothing selected</span>
+            <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="dropdown-panel">
+            <div class="dropdown-search-wrap">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              <input type="text" class="dropdown-search" placeholder="Search people">
+            </div>
+            <ul class="dropdown-list"></ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="terms-conditions.html">Terms &amp; Conditions</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-policy.html">Cookie Policy</a>
+      </div>
+      <div class="footer-credit">Software development by <a href="https://www.geeks.ltd/" target="_blank" rel="noopener">Geeks</a></div>
+    </footer>
+
+  </main>
+</div>
+
+<script src="../js/menu.js"></script>
+<script src="../js/setup-exercise.js"></script>
+</body>
+</html>

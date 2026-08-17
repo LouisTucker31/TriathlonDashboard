@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Excyte | Exercise Report</title>
+<link rel="stylesheet" href="../css/styles.css">
+<script>
+  (function () {
+    try {
+      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
+        document.documentElement.classList.add('sidebar-collapsed');
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body data-page="reporting">
+
+<div class="app">
+
+  <!-- ============ SIDEBAR (injected by js/menu.js) ============ -->
+  <div id="sidebar-placeholder"></div>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <div class="detail-header">
+      <h1 class="page-title" id="pageTitle">Exercise Report</h1>
+      <div class="header-actions">
+        <button type="button" class="back-btn" id="backBtn">Back</button>
+      </div>
+    </div>
+
+    <p class="report-subtitle" id="reportSubtitle">Exercise Name &middot; Organisation</p>
+
+    <!-- SUMMARY -->
+    <div class="report-section">
+      <h2>AI Summary</h2>
+      <p class="summary-headline" id="summaryHeadline"></p>
+      <p class="summary-context" id="summaryContext"></p>
+      <div class="summary-stat" id="summaryStat">
+        <div class="summary-stat-bar"><div class="summary-stat-fill" id="summaryStatFill"></div></div>
+        <div class="summary-stat-label" id="summaryStatLabel"></div>
+      </div>
+      <div id="summaryImprovements"></div>
+    </div>
+
+    <!-- EXERCISE OVERVIEW -->
+    <div class="report-section">
+      <h2>Exercise Overview</h2>
+      <div class="overview-grid">
+        <div class="overview-item">
+          <div class="overview-label">Organisation</div>
+          <div class="overview-value" id="ovOrg">&mdash;</div>
+        </div>
+        <div class="overview-item">
+          <div class="overview-label">Exercise Name</div>
+          <div class="overview-value" id="ovExercise">&mdash;</div>
+        </div>
+        <div class="overview-item">
+          <div class="overview-label">Exercise Theme</div>
+          <div class="overview-value" id="ovTheme">&mdash;</div>
+        </div>
+        <div class="overview-item">
+          <div class="overview-label">Completion Date &amp; Time</div>
+          <div class="overview-value" id="ovCompleted">&mdash;</div>
+        </div>
+        <div class="overview-item">
+          <div class="overview-label">Duration</div>
+          <div class="overview-value" id="ovDuration">&mdash;</div>
+        </div>
+        <div class="overview-item">
+          <div class="overview-label">Total Slides</div>
+          <div class="overview-value" id="ovSlides">&mdash;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE SUMMARY -->
+    <div class="report-section">
+      <h2>Attendance Summary</h2>
+      <div class="attendance-grid">
+        <div class="attendance-group">
+          <div class="attendance-group-header">
+            <span class="attendance-dot dot-facilitator"></span>
+            Facilitators
+            <span class="attendance-count-badge" id="facilitatorCount">0</span>
+          </div>
+          <ul class="attendance-list" id="facilitatorList"></ul>
+        </div>
+        <div class="attendance-group">
+          <div class="attendance-group-header">
+            <span class="attendance-dot dot-observer"></span>
+            Observers
+            <span class="attendance-count-badge" id="observerCount">0</span>
+          </div>
+          <ul class="attendance-list" id="observerList"></ul>
+        </div>
+        <div class="attendance-group">
+          <div class="attendance-group-header">
+            <span class="attendance-dot dot-participant"></span>
+            Participants
+            <span class="attendance-count-badge" id="participantCount">0</span>
+          </div>
+          <ul class="attendance-list" id="participantListReport"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- OBSERVATIONS -->
+    <div class="report-section">
+      <h2>Observations</h2>
+      <div id="observationsContent"></div>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="terms-conditions.html">Terms &amp; Conditions</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="cookie-policy.html">Cookie Policy</a>
+      </div>
+      <div class="footer-credit">Software development by <a href="https://www.geeks.ltd/" target="_blank" rel="noopener">Geeks</a></div>
+    </footer>
+
+  </main>
+</div>
+
+<script src="../js/menu.js"></script>
+<script src="../js/report-detail.js"></script>
+</body>
+</html>

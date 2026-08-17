@@ -1,0 +1,155 @@
+.calendar-header {
+  align-items: flex-start;
+}
+
+.cal-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cal-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-width: 140px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto 1fr;
+  gap: 6px;
+  height: 100%;
+}
+
+.cal-day-header {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding-bottom: 4px;
+}
+
+.cal-cell {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px;
+  min-height: 0;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.cal-cell:hover {
+  background: var(--bg);
+}
+
+.cal-cell.today {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.cal-cell.drop-target {
+  background: var(--bg);
+  border-color: var(--primary);
+  border-style: dashed;
+}
+
+.cal-cell-num {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.cal-cell.today .cal-cell-num {
+  color: var(--primary);
+}
+
+.cal-cell-sessions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.cal-session-chip {
+  flex: none;
+  font-size: 0.72rem;
+  padding: 3px 6px;
+  border-left: 2px solid var(--sport-color, var(--primary));
+  background: var(--bg);
+  color: var(--text);
+  cursor: grab;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-session-chip:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.cal-session-chip.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.cal-session-chip.missed {
+  opacity: 0.6;
+  border-left-color: var(--danger);
+  color: var(--danger);
+}
+
+.cal-session-chip.drop-before {
+  box-shadow: 0 -2px 0 0 var(--primary);
+}
+
+.cal-session-chip.drop-after {
+  box-shadow: 0 2px 0 0 var(--primary);
+}
+
+.cal-session-chip.dragging {
+  opacity: 0.4;
+}
+
+@media (max-width: 860px) {
+  .cal-label {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .cal-day-header {
+    font-size: 0.65rem;
+  }
+
+  .cal-cell-num {
+    font-size: 0.7rem;
+  }
+
+  .cal-session-chip {
+    font-size: 0.65rem;
+    padding: 4px;
+  }
+
+  .cal-cell {
+    padding: 4px;
+  }
+}

@@ -1,215 +1,104 @@
-<!DOCTYPE html>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Excyte | Exercise Themes</title>
-<link rel="stylesheet" href="css/styles.css">
-<script>
-  // Runs before anything paints, so the layout is correct from the very
-  // first frame instead of rendering expanded then sliding to collapsed.
-  (function () {
-    try {
-      if (localStorage.getItem('excyteSidebarCollapsed') === 'true') {
-        document.documentElement.classList.add('sidebar-collapsed');
-      }
-    } catch (e) {}
-  })();
-</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Triathlon Training Dashboard</title>
+
+  <link rel="icon" href="assets/favicon.ico" sizes="any" />
+  <link rel="icon" href="assets/icon-32.png" sizes="32x32" type="image/png" />
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#7a3b2e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Triathlon" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/calendar.css" />
 </head>
-<body data-page="exercises">
-
-<div class="app">
-
-  <!-- ============ SIDEBAR (injected by js/menu.js) ============ -->
-  <div id="sidebar-placeholder"></div>
-
-  <!-- ============ MAIN CONTENT ============ -->
-  <main class="main-content">
-
-    <h1 class="page-title">Exercise Themes</h1>
-
-    <div class="filters-row">
-      <div class="filter-group">
-        <label for="themeFilter">Theme</label>
-        <div class="select-wrapper">
-          <select id="themeFilter">
-            <option value="all">All Themes</option>
-            <option value="My Exercises">My Exercises</option>
-            <option value="Phishing & Social Engineering">Phishing &amp; Social Engineering</option>
-            <option value="Ransomware & Extortion">Ransomware &amp; Extortion</option>
-            <option value="Test Theme">Test Theme</option>
-            <option value="Communications, Media & Stakeholder Management">Communications, Media &amp; Stakeholder Management</option>
-            <option value="Cyber Assessment Framework (CAF)">Cyber Assessment Framework (CAF)</option>
-            <option value="Education and Safeguarding">Education and Safeguarding</option>
-            <option value="Excyte Live">Excyte Live</option>
-            <option value="Executive & Leadership">Executive &amp; Leadership</option>
-            <option value="How to Exercise">How to Exercise</option>
-            <option value="Incident of the Month">Incident of the Month</option>
-            <option value="Insider Threat">Insider Threat</option>
-            <option value="National Security">National Security</option>
-            <option value="NCSC Exercise in a Box">NCSC Exercise in a Box</option>
-            <option value="Operational Technology (OT)">Operational Technology (OT)</option>
-            <option value="PYOA (BETA)">PYOA (BETA)</option>
-            <option value="Supply Chain & Third-Party Compromise">Supply Chain &amp; Third-Party Compromise</option>
-            <option value="Website Defacement & Brand Abuse">Website Defacement &amp; Brand Abuse</option>
-          </select>
-          <svg class="select-arrow" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#16264A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-        </div>
-      </div>
-
-      <div class="filter-group status-group">
-        <label>Status</label>
-        <div class="radio-row" id="statusFilter">
-          <label class="radio">
-            <input type="radio" name="status" value="all" checked>
-            <span class="radio-dot"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
-            All
-          </label>
-          <label class="radio">
-            <input type="radio" name="status" value="active">
-            <span class="radio-dot"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
-            Active exercice
-          </label>
-          <label class="radio">
-            <input type="radio" name="status" value="inactive">
-            <span class="radio-dot"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
-            Not active exercise
-          </label>
-        </div>
-      </div>
+<body>
+  <header class="app-header">
+    <div class="app-header-title">
+      <h1>Triathlon Dashboard</h1>
     </div>
+    <div class="app-header-actions">
+      <button id="add-workout-btn" class="btn btn-primary">+ Add Workout</button>
 
-    <div class="cards-panel">
-      <div class="cards-grid" id="cardsGrid">
+      <label class="btn btn-secondary file-btn">
+        Import CSV
+        <input type="file" id="csv-import-input" accept=".csv" hidden />
+      </label>
 
-        <div class="card" data-theme="My Exercises" data-status="inactive">
-          <h3>My Exercises</h3>
-          <p>Exercises you've created and saved yourself in the Exercise Builder.</p>
-          <div class="icon-box"><img src="assets/icons/my-exercises.svg" alt=""></div>
-        </div>
+      <button id="export-backup-btn" class="btn btn-ghost">Export Backup</button>
 
-        <div class="card" data-theme="Phishing & Social Engineering" data-status="inactive">
-          <h3>Phishing &amp; Social Engineering</h3>
-          <p>Assess your team's ability to detect, report, and respond to social engineering threats.</p>
-          <div class="icon-box"><img src="assets/icons/phishing.svg" alt=""></div>
-        </div>
+      <label class="btn btn-ghost file-btn">
+        Restore Backup
+        <input type="file" id="import-backup-input" accept=".json" hidden />
+      </label>
 
-        <div class="card" data-theme="Ransomware & Extortion" data-status="inactive">
-          <h3>Ransomware &amp; Extortion</h3>
-          <p>Explore scenarios where data is held hostage and recovery decisions must be made under pressure.</p>
-          <div class="icon-box"><img src="assets/icons/ransomware.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Test Theme" data-status="inactive">
-          <h3>Test Theme</h3>
-          <p>UAT test theme</p>
-          <div class="icon-box"><img src="assets/icons/test-theme.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Communications, Media & Stakeholder Management" data-status="inactive">
-          <h3>Communications, Media &amp; Stakeholder Management</h3>
-          <p>Test your organisation's ability to manage information flow, media engagement, and stakeholder communications during a crisis.</p>
-          <div class="icon-box"><img src="assets/icons/comms.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Cyber Assessment Framework (CAF)" data-status="inactive">
-          <h3>Cyber Assessment Framework (CAF)</h3>
-          <p>Assess your organisation's cyber resilience using scenarios aligned to the NCSC Cyber Assessment Framework principles.</p>
-          <div class="icon-box"><img src="assets/icons/caf.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Education and Safeguarding" data-status="inactive">
-          <h3>Education and Safeguarding</h3>
-          <p>Explore how cyber incidents impact safeguarding responsibilities and continuity within the education sector.</p>
-          <div class="icon-box"><img src="assets/icons/education.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Excyte Live" data-status="inactive">
-          <h3>Excyte Live</h3>
-          <p>Excyte Live delivers interactive cyber incident exercises designed to strengthen decision-making, communication, and organisational resilience through realistic, role-based scenarios.</p>
-          <div class="icon-box"><img src="assets/icons/excyte-live.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Executive & Leadership" data-status="inactive">
-          <h3>Executive &amp; Leadership</h3>
-          <p>Test your cyber security leaders and executives.</p>
-          <div class="icon-box"><img src="assets/icons/executive.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="How to Exercise" data-status="inactive">
-          <h3>How to Exercise</h3>
-          <p>Learn how to plan, design, and deliver effective cyber exercises to your organisation.</p>
-          <div class="icon-box"><img src="assets/icons/how-to-exercise.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Incident of the Month" data-status="inactive">
-          <h3>Incident of the Month</h3>
-          <p>Tackle recent incidents.</p>
-          <div class="icon-box"><img src="assets/icons/incident-of-month.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Insider Threat" data-status="inactive">
-          <h3>Insider Threat</h3>
-          <p>Explore scenarios where trusted individuals pose risks to organisational security and resilience.</p>
-          <div class="icon-box"><img src="assets/icons/insider-threat.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="National Security" data-status="inactive">
-          <h3>National Security</h3>
-          <p>Assess readiness to detect, respond to, and recover from cyber events with national-level implications.</p>
-          <div class="icon-box"><img src="assets/icons/national-security.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="NCSC Exercise in a Box" data-status="inactive">
-          <h3>NCSC Exercise in a Box</h3>
-          <p>Experience scenarios inspired by the NCSC's Exercise in a Box to strengthen cyber resilience and teamwork.</p>
-          <div class="icon-box"><img src="assets/icons/ncsc-box.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Operational Technology (OT)" data-status="inactive">
-          <h3>Operational Technology (OT)</h3>
-          <p>Evaluate the security and continuity of industrial processes during a cyber incident.</p>
-          <div class="icon-box"><img src="assets/icons/ot.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="PYOA (BETA)" data-status="inactive">
-          <h3>PYOA (BETA)</h3>
-          <p>Pick your challenge, forge your path, face the fallout.</p>
-          <div class="icon-box"><img src="assets/icons/pyoa.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Supply Chain & Third-Party Compromise" data-status="inactive">
-          <h3>Supply Chain &amp; Third-Party Compromise</h3>
-          <p>Explore scenarios where vulnerabilities in the supply chain impact operations and security.</p>
-          <div class="icon-box"><img src="assets/icons/supply-chain.svg" alt=""></div>
-        </div>
-
-        <div class="card" data-theme="Website Defacement & Brand Abuse" data-status="inactive">
-          <h3>Website Defacement &amp; Brand Abuse</h3>
-          <p>Test your organisation's ability to detect and respond to website defacement and brand abuse incidents.</p>
-          <div class="icon-box"><img src="assets/icons/website-defacement.svg" alt=""></div>
-        </div>
-
-      </div>
-
-      <p class="no-results" id="noResults">No exercise themes match the selected filters.</p>
+      <button id="clear-data-btn" class="btn btn-danger">Clear Data</button>
     </div>
+  </header>
 
-    <footer class="footer">
-      <div class="footer-links">
-        <a href="pages/terms-conditions.html">Terms &amp; Conditions</a>
-        <a href="pages/privacy-policy.html">Privacy Policy</a>
-        <a href="pages/cookie-policy.html">Cookie Policy</a>
+  <main class="dashboard-grid">
+    <section class="card today-card">
+      <div class="card-header">
+        <h2>Today's Workout</h2>
+        <span id="today-date" class="card-subtitle"></span>
       </div>
-      <div class="footer-credit">Software development by <a href="https://www.geeks.ltd/" target="_blank" rel="noopener">Geeks</a></div>
-    </footer>
+      <div id="today-card-body" class="card-body"></div>
+    </section>
 
+    <section class="card volume-card">
+      <div class="card-header">
+        <div>
+          <h2>Weekly Volume</h2>
+          <span id="volume-week-label" class="card-subtitle"></span>
+        </div>
+        <div class="volume-totals">
+          <span id="volume-planned-total">-</span> planned ·
+          <span id="volume-actual-total">-</span> actual
+        </div>
+      </div>
+      <div id="volume-bars" class="card-body"></div>
+    </section>
+
+    <section class="card calendar-card">
+      <div class="card-header calendar-header">
+        <h2>Calendar</h2>
+        <div class="cal-controls">
+          <div class="cal-nav">
+            <button id="cal-prev" class="btn btn-ghost small" aria-label="Previous">‹</button>
+            <button id="cal-today" class="btn btn-ghost small">Today</button>
+            <button id="cal-next" class="btn btn-ghost small" aria-label="Next">›</button>
+          </div>
+          <span id="cal-label" class="cal-label"></span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="cal-grid" class="cal-grid week"></div>
+      </div>
+    </section>
   </main>
-</div>
 
-<script src="js/menu.js"></script>
-<script src="js/script.js"></script>
+  <div id="modal-overlay" class="modal-overlay">
+    <div id="modal" class="modal"></div>
+  </div>
+
+  <div id="dialog-overlay" class="modal-overlay dialog-overlay">
+    <div id="dialog" class="modal dialog"></div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/dialogs.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/planStore.js"></script>
+  <script src="js/csvImport.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/sessionModal.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
